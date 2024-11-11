@@ -1,171 +1,22 @@
-version: "3.3"
-
 services:
-  traefik:
-    container_name: traefik
-    image: "traefik:latest"
-    command:
-      - --entrypoints.web.address=:80
-      - --providers.docker
-      - --log.level=DEBUG
-      - --api.insecure=true
-    ports:
-      - "80:80"
-      - "8080:8080"
-    networks:
-      - traefik
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    labels:
-      - "traefik.http.routers.dashboard.rule=Host(`traefik.localhost`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.dashboard.service=api@internal"
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    command: -H unix:///var/run/docker.sock
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`portainer.localhost`)"
-      - "traefik.http.routers.frontend.entrypoints=web"
-      - "traefik.http.services.frontend.loadbalancer.server.port=9000"
-      - "traefik.http.routers.frontend.service=frontend"
-
-  whoami:
-    image: traefik/whoami
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.localhost`)"
-
   actual_server:
-    image: actualbudget/actual-server:latest
-    container_name: actual_server
-    volumes:
-      - actual_data:/data
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.actual-server.rule=Host(`actualbudget.localhost`)"
-      - "traefik.http.routers.actual-server.entrypoints=web"
-
-  strapi:
-    container_name: strapi
-    build: .
-    image: strapi:latest
-    restart: unless-stopped
-    # env_file: strapi-cms/.env
-    environment:
-      - DATABASE_CLIENT=postgres
-      - DATABASE_HOST=db
-      - DATABASE_PORT=5432
-      - DATABASE_NAME=strapi_db
-      - DATABASE_USERNAME=strapi
-      - DATABASE_PASSWORD=strapi
-      - APP_KEYS=j1mkNTJDoQLJyYVgYzl+3Q==,kOmo7S3zvZzl7U4YCfIaAw==,pGSN/KQ3K3Ng1B5XpmChEA==,8/RNTHXG+tEkDwYFuGv+iQ==
-      - API_TOKEN_SALT=bzLPdzYp6J/g1qTe3jH0zg==
-      - ADMIN_JWT_SECRET=nhZCF8SnRHeTQC4MnhPGXg==
-      - TRANSFER_TOKEN_SALT=Th/xOa+1HNvGlwSm8IUyPA==
-      - APP_URL=http://strapi.localhost
-    networks:
-      - traefik
-    depends_on:
-      - db
+    image: docker.io/actualbudget/actual-server:latest
     ports:
-      - 1337:1337
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.strapi.rule=Host(`strapi.localhost`)"
-      - "traefik.http.routers.strapi.entrypoints=web"
-      - "traefik.http.services.strapi.loadbalancer.server.port=1337"
-      - "traefik.http.routers.strapi.middlewares=debug"
-      - "traefik.http.middlewares.debug.headers.customrequestheaders.Host=Host(`{{ .Host }}`)"
-
-  db:
-    container_name: postgres
-    image: postgres
-    restart: always
+      # This line makes Actual available at port 5006 of the device you run the server on,
+      # i.e. http://localhost:5006. You can change the first number to change the port, if you want.
+      - '5006:5006'
+    environment:
+      # Uncomment any of the lines below to set configuration options.
+      # - ACTUAL_HTTPS_KEY=/data/selfhost.key
+      # - ACTUAL_HTTPS_CERT=/data/selfhost.crt
+      - ACTUAL_PORT=5006
+      # - ACTUAL_UPLOAD_FILE_SYNC_SIZE_LIMIT_MB=20
+      # - ACTUAL_UPLOAD_SYNC_ENCRYPTED_FILE_SYNC_SIZE_LIMIT_MB=50
+      # - ACTUAL_UPLOAD_FILE_SIZE_LIMIT_MB=20
+      # See all options and more details at https://actualbudget.github.io/docs/Installing/Configuration
+      # !! If you are not using any of these options, remove the 'environment:' tag entirely.
     volumes:
-      - ./db:/var/lib/postgresql/data
-    environment:
-      POSTGRES_USER: strapi
-      POSTGRES_PASSWORD: strapi
-      POSTGRES_DB: strapi_db
-    networks:
-      - traefik
-
-  pgadmin:
-    container_name: pgadmin4_container
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.pgadmin.rule=Host(`pgadmin.localhost`)"
-      - "traefik.http.routers.pgadmin.entrypoints=web"
-
-  plex:
-    image: plexinc/pms-docker:latest
-    container_name: plex
-    environment:
-      - TZ=Europe/Lisbon
-      - PLEX_CLAIM=claim-xxxxxxxxxxxxxx
-      - ADVERTISE_IP=https://plex.example.com:443
-      - PLEX_UID=${USER}
-      - PLEX_GID=${USER}
-      - VERSION=docker
-    volumes:
-      - ./config:/config
-      - ./transcode:/transcode
-      - ./data:/data
-    hostname: plex.example.com
-    ports:
-     - 32400:32400/tcp
-     - 32400:32400/udp
-     - 3005:3005/tcp
-     - 8324:8324/tcp
-     - 32469:32469/tcp
-     - 1900:1900/udp
-     - 32410:32410/udp
-     - 32412:32412/udp
-     - 32413:32413/udp
-     - 32414:32414/udp
-    restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.plex.rule=Host(`plex.localhost`)"
-      - "traefik.http.routers.plex.entrypoints=websecure"
-      - "traefik.http.routers.plex.tls.certresolver=mydnschallenge"
-      - "traefik.http.services.plex.loadbalancer.server.port=32400"
-  
-  jellyfin:
-    image: "jellyfin/jellyfin"
-    network_mode: 'host'
-    restart: "unless-stopped"
-    user: "1000:1000"
-    volumes:
-      - "./cache:/cache"
-      - "./config:/config"
-      - "./logs:/logs"
-      - "./media:/media"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.jellyfin.rule=Host(`jellyfin.localhost`)"
-      - "traefik.http.routers.jellyfin.entrypoints=web"
-      - "traefik.http.services.jellyfin.loadbalancer.server.port: 8096"
-    environment:
-    - JELLYFIN_PublishedServerUrl=http://jellyfin.localhost
-
-volumes:
-  portainer_data:
-  actual_data:
-  strapi_db:
-
-networks:
-  traefik:
-    name: traefik-net
-    external: true
+      # Change './actual-data' below to the path to the folder you want Actual to store its data in on your server.
+      # '/data' is the path Actual will look for its files in by default, so leave that as-is.
+      - ./actual-data:/data
+    restart: unless-stopped
