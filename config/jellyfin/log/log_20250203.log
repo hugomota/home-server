@@ -1,0 +1,12 @@
+[2025-02-03 00:10:04.783 +00:00] [INF] [50] Emby.Server.Implementations.IO.LibraryMonitor: "log" ("/config/log") will be refreshed.
+[2025-02-03 00:11:04.801 +00:00] [INF] [42] Emby.Server.Implementations.IO.LibraryMonitor: "log" ("/config/log") will be refreshed.
+[2025-02-03 06:58:09.774 +00:00] [INF] [53] Emby.Server.Implementations.ScheduledTasks.TaskManager: "Extract Chapter Images" Completed after 0 minute(s) and 0 seconds
+[2025-02-03 06:58:10.767 +00:00] [INF] [53] Emby.Server.Implementations.ScheduledTasks.TaskManager: Daily trigger for "Extract Chapter Images" set to fire at 2025-02-04 02:00:00.000 +00:00, which is 19:01:49.2326794 from now.
+[2025-02-03 06:59:10.143 +00:00] [INF] [61] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.
+[2025-02-03 06:59:10.145 +00:00] [INF] [58] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.
+[2025-02-03 07:00:10.500 +00:00] [INF] [65] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.
+[2025-02-03 08:37:04.233 +00:00] [INF] [129] Emby.Server.Implementations.ScheduledTasks.TaskManager: "Generate Trickplay Images" Completed after 0 minute(s) and 0 seconds
+[2025-02-03 08:37:05.239 +00:00] [INF] [129] Emby.Server.Implementations.ScheduledTasks.TaskManager: Daily trigger for "Generate Trickplay Images" set to fire at 2025-02-04 03:00:00.000 +00:00, which is 18:22:54.7603987 from now.
+[2025-02-03 08:38:04.940 +00:00] [INF] [127] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.
+[2025-02-03 08:38:04.941 +00:00] [INF] [123] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.
+[2025-02-03 08:39:05.051 +00:00] [INF] [117] Emby.Server.Implementations.IO.LibraryMonitor: "data" ("/config/data") will be refreshed.

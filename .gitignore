@@ -1,26 +1,41 @@
-# General
+# Ignore Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Ignore environment variables
+.env
+.env.local
+
+# Ignore Docker-related files
+docker-compose.override.yml
+docker-compose.override.yaml
+*.pid
+
+# Ignore logs and temp files
+logs/
+*.log
+*.swp
+
+# Ignore application data and cache
+data/
+config/
+cache/
+
+# Ignore media and downloads
+media/
+downloads/
+
+# Ignore Let's Encrypt certificates
+traefik/letsencrypt/
+traefik/certs/
+
+# Ignore IDE/editor config files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore system files
 .DS_Store
-.AppleDouble
-.LSOverride
-
-# Icon must end with two \r
-Icon
-
-# Thumbnails
-._*
-
-# Files that might appear in the root of a volume
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-
-# Directories potentially created on remote AFP share
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
+Thumbs.db
