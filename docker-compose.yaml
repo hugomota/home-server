@@ -1,165 +1,42 @@
-version: '3.9'
-
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:latest
+    container_name: traefik
     command:
-      - --api.dashboard=true
-      - --api.insecure=true
-      - --providers.docker=true
-      - --providers.docker.exposedbydefault=false
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --certificatesresolvers.leresolver.acme.email=${TRAEFIK_EMAIL}
-      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
-      - '80:80'
-      - '443:443'
+      - "80:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/letsencrypt:/letsencrypt
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  pihole:
-    image: pihole/pihole:latest
-    environment:
-      - TZ=${TZ}
-      - WEBPASSWORD=admin
-      - DNS1=1.1.1.1
-      - DNS2=8.8.8.8
-    volumes:
-      - ${CONFIG_ROOT}/pihole:/etc/pihole
-      - ${CONFIG_ROOT}/pihole/dnsmasq.d:/etc/dnsmasq.d
-    ports:
-      - '53:53/tcp' # DNS over TCP
-      - '53:53/udp' # DNS over UDP
-      - '80:80' # Pi-hole web interface (optional)
     labels:
       - traefik.enable=true
-      - traefik.http.routers.pihole.rule=Host(`pihole.${DOMAIN}`)
-      - traefik.http.routers.pihole.entrypoints=websecure
-      - traefik.http.routers.pihole.tls.certresolver=leresolver
-      - traefik.http.services.pihole.loadbalancer.server.port=80
+      - traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.dashboard.service=api@internal
+      - traefik.http.routers.dashboard.entrypoints=web
+      - traefik.http.routers.dashboard.middlewares=auth
+      - traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_AUTH}
     networks:
       - traefik_net
     restart: unless-stopped
 
-  jellyfin:
-    image: jellyfin/jellyfin:latest
+  actual-budget:
+    image: actualbudget/actual-server:latest
+    container_name: actual-budget
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
+    volumes:
+      - ${DATA_ROOT}/actual-budget:/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jellyfin.rule=Host(`media.${DOMAIN}`)
-      - traefik.http.routers.jellyfin.entrypoints=websecure
-      - traefik.http.routers.jellyfin.tls.certresolver=leresolver
-      - traefik.http.services.jellyfin.loadbalancer.server.port=8096
-    volumes:
-      - ${CONFIG_ROOT}/jellyfin:/config
-      - ${MEDIA_ROOT}:/media
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  qbit:
-    image: lscr.io/linuxserver/qbittorrent:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - WEBUI_PORT=8080
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.qbit.rule=Host(`torrent.${DOMAIN}`)
-      - traefik.http.routers.qbit.entrypoints=websecure
-      - traefik.http.routers.qbit.tls.certresolver=leresolver
-      - traefik.http.services.qbit.loadbalancer.server.port=8080
-    volumes:
-      - ${CONFIG_ROOT}/qbit:/config
-      - ${DOWNLOADS_ROOT}:/downloads
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.jackett.rule=Host(`search.${DOMAIN}`)
-      - traefik.http.routers.jackett.entrypoints=websecure
-      - traefik.http.routers.jackett.tls.certresolver=leresolver
-      - traefik.http.services.jackett.loadbalancer.server.port=9117
-    volumes:
-      - ${CONFIG_ROOT}/jackett:/config
-      - ${DOWNLOADS_ROOT}:/downloads
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.sonarr.rule=Host(`tv.${DOMAIN}`)
-      - traefik.http.routers.sonarr.entrypoints=websecure
-      - traefik.http.routers.sonarr.tls.certresolver=leresolver
-      - traefik.http.services.sonarr.loadbalancer.server.port=8989
-    volumes:
-      - ${CONFIG_ROOT}/sonarr:/config
-      - ${MEDIA_ROOT}/tv:/tv
-      - ${DOWNLOADS_ROOT}:/downloads
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.radarr.rule=Host(`movies.${DOMAIN}`)
-      - traefik.http.routers.radarr.entrypoints=websecure
-      - traefik.http.routers.radarr.tls.certresolver=leresolver
-      - traefik.http.services.radarr.loadbalancer.server.port=7878
-    volumes:
-      - ${CONFIG_ROOT}/radarr:/config
-      - ${MEDIA_ROOT}/movies:/movies
-      - ${DOWNLOADS_ROOT}:/downloads
-    networks:
-      - traefik_net
-    restart: unless-stopped
-
-  bazarr:
-    image: ghcr.io/linuxserver/bazarr:latest
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.bazarr.rule=Host(`subtitles.${DOMAIN}`)
-      - traefik.http.routers.bazarr.entrypoints=websecure
-      - traefik.http.routers.bazarr.tls.certresolver=leresolver
-      - traefik.http.services.bazarr.loadbalancer.server.port=6767
-    volumes:
-      - ${CONFIG_ROOT}/bazarr:/config
-      - ${MEDIA_ROOT}:/media
+      - traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)
+      - traefik.http.routers.actual-budget.entrypoints=web
+      - traefik.http.services.actual-budget.loadbalancer.server.port=5006
     networks:
       - traefik_net
     restart: unless-stopped

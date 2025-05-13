@@ -4312,3 +4312,270 @@
 2025-02-03 09:19:26.4|Debug|PendingReleaseService|Removing failed releases from pending
 2025-02-03 09:24:26.4|Debug|ImportListSyncService|No import lists with automatic add enabled
 2025-02-03 09:29:36.7|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:08:19.1|Debug|ProcessProvider|Found 0 processes with the name: Sonarr.Console
+2025-03-24 14:08:19.1|Debug|ProcessProvider|Found 1 processes with the name: Sonarr
+2025-03-24 14:08:19.1|Debug|ProcessProvider| - [143] Sonarr
+2025-03-24 14:08:19.1|Info|MigrationController|*** Migrating data source=/config/sonarr.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:08:19.2|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:08:19.2|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0418981s
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0436951s
+2025-03-24 14:08:19.2|Info|FluentMigrator.Runner.MigrationRunner|217: add_mal_and_anilist_ids migrating
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Beginning Transaction
+2025-03-24 14:08:19.3|Info|add_mal_and_anilist_ids|Starting migration of Main DB to 217
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|AlterTable Series
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0002181s
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|CreateColumn Series MalIds String
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|ALTER TABLE "Series" ADD COLUMN "MalIds" TEXT NOT NULL DEFAULT '[]'
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0207301s
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|AlterTable Series
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 2.67E-05s
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|CreateColumn Series AniListIds String
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|ALTER TABLE "Series" ADD COLUMN "AniListIds" TEXT NOT NULL DEFAULT '[]'
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0023305s
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|INSERT INTO "VersionInfo" ("Version", "AppliedOn", "Description") VALUES (217, '2025-03-24T14:08:19', 'add_mal_and_anilist_ids')
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Committing Transaction
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|217: add_mal_and_anilist_ids migrated
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0152494s
+2025-03-24 14:08:19.3|Debug|MigrationController|Took: 00:00:00.2088719
+2025-03-24 14:08:19.3|Info|MigrationController|*** Migrating data source=/config/logs.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:08:19.3|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0076949s
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0094057s
+2025-03-24 14:08:19.3|Info|FluentMigrator.Runner.MigrationRunner|217: add_mal_and_anilist_ids migrating
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Beginning Transaction
+2025-03-24 14:08:19.3|Info|add_mal_and_anilist_ids|Starting migration of Log DB to 217
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|INSERT INTO "VersionInfo" ("Version", "AppliedOn", "Description") VALUES (217, '2025-03-24T14:08:19', 'add_mal_and_anilist_ids')
+2025-03-24 14:08:19.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Committing Transaction
+2025-03-24 14:08:19.4|Info|FluentMigrator.Runner.MigrationRunner|217: add_mal_and_anilist_ids migrated
+2025-03-24 14:08:19.4|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0071241s
+2025-03-24 14:08:19.4|Debug|MigrationController|Took: 00:00:00.0378794
+2025-03-24 14:08:19.6|Info|Microsoft.Hosting.Lifetime|Now listening on: http://[::]:8989
+2025-03-24 14:08:19.7|Debug|QualityDefinitionService|Setting up default quality config
+2025-03-24 14:08:19.8|Debug|NotificationFactory|Initializing Providers. Count 25
+2025-03-24 14:08:19.8|Debug|IndexerFactory|Initializing Providers. Count 10
+2025-03-24 14:08:19.8|Debug|ImportListFactory|Initializing Providers. Count 11
+2025-03-24 14:08:19.8|Debug|MetadataFactory|Initializing Providers. Count 5
+2025-03-24 14:08:19.8|Debug|DownloadClientFactory|Initializing Providers. Count 18
+2025-03-24 14:08:19.8|Info|Microsoft.Hosting.Lifetime|Application started. Press Ctrl+C to shut down.
+2025-03-24 14:08:19.8|Info|Microsoft.Hosting.Lifetime|Hosting environment: Production
+2025-03-24 14:08:19.8|Info|Microsoft.Hosting.Lifetime|Content root path: /app/sonarr/bin
+2025-03-24 14:08:19.9|Info|ManagedHttpDispatcher|IPv4 is available: True, IPv6 will be disabled
+2025-03-24 14:08:20.3|Debug|Sonarr.Http.Authentication.ApiKeyAuthenticationHandler|AuthenticationScheme: API was not authenticated.
+2025-03-24 14:08:49.8|Info|SceneMappingService|Updating Scene mappings
+2025-03-24 14:08:49.8|Info|BackupService|Starting Backup
+2025-03-24 14:08:49.8|Debug|XemProxy|Fetching alternate names
+2025-03-24 14:08:49.8|Info|HousekeepingService|Running housecleaning tasks
+2025-03-24 14:08:49.8|Debug|HousekeepingService|Starting CleanupAbsolutePathMetadataFiles
+2025-03-24 14:08:49.8|Debug|BackupService|Cleaning up backup files older than 28 days
+2025-03-24 14:08:49.8|Debug|HousekeepingService|Completed CleanupAbsolutePathMetadataFiles
+2025-03-24 14:08:49.8|Debug|HousekeepingService|Starting CleanupAdditionalNamingSpecs
+2025-03-24 14:08:49.8|Debug|BackupService|Finished cleaning up old backup files
+2025-03-24 14:08:49.9|Debug|BackupService|Backing up config.xml
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupAdditionalNamingSpecs
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupAdditionalUsers
+2025-03-24 14:08:49.9|Debug|DiskTransferService|Copy [/config/config.xml] > [/run/sonarr-temp/sonarr_backup/config.xml]
+2025-03-24 14:08:49.9|Debug|BackupService|Backing up database
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupAdditionalUsers
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupCommandQueue
+2025-03-24 14:08:49.9|Debug|BackupService|Creating backup zip
+2025-03-24 14:08:49.9|Debug|ArchiveService|Creating archive /config/Backups/scheduled/sonarr_backup_v4.0.14.2939_2025.03.24_14.08.49.zip
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupCommandQueue
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupDownloadClientUnavailablePendingReleases
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupDownloadClientUnavailablePendingReleases
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupDuplicateMetadataFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupDuplicateMetadataFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedBlocklist
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedBlocklist
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedDownloadClientStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedDownloadClientStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedEpisodeFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedEpisodeFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedEpisodes
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedEpisodes
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedHistoryItems
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedHistoryItems
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedImportListStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedImportListStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedIndexerStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedIndexerStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedMetadataFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedMetadataFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedNotificationStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedNotificationStatus
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupOrphanedPendingReleases
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupOrphanedPendingReleases
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupQualityProfileFormatItems
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupQualityProfileFormatItems
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupTemporaryUpdateFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupTemporaryUpdateFiles
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting CleanupUnusedTags
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed CleanupUnusedTags
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting DeleteBadMediaCovers
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Completed DeleteBadMediaCovers
+2025-03-24 14:08:49.9|Debug|HousekeepingService|Starting FixFutureDownloadClientStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed FixFutureDownloadClientStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting FixFutureImportListStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed FixFutureImportListStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting FixFutureIndexerStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed FixFutureIndexerStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting FixFutureNotificationStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed FixFutureNotificationStatusTimes
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting FixFutureRunScheduledTasks
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed FixFutureRunScheduledTasks
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting TrimLogDatabase
+2025-03-24 14:08:50.0|Info|Database|Vacuuming Log database
+2025-03-24 14:08:50.0|Info|Database|Log database compressed
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed TrimLogDatabase
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Starting UpdateCleanTitleForSeries
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Completed UpdateCleanTitleForSeries
+2025-03-24 14:08:50.0|Debug|HousekeepingService|Compressing main database after housekeeping
+2025-03-24 14:08:50.0|Info|Database|Vacuuming Main database
+2025-03-24 14:08:50.1|Info|Database|Main database compressed
+2025-03-24 14:08:50.1|Debug|BackupService|Backup zip created
+2025-03-24 14:08:50.1|Debug|InstallUpdateService|Checking for updates
+2025-03-24 14:08:50.2|Debug|InstallUpdateService|No update available
+2025-03-24 14:08:50.2|Info|RecycleBinProvider|Recycle Bin has not been configured, cannot cleanup.
+2025-03-24 14:08:50.2|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:08:50.3|Info|RssSyncService|Starting RSS Sync
+2025-03-24 14:08:50.3|Info|RefreshSeriesService|Updating The Bear
+2025-03-24 14:08:50.3|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2025-03-24 14:08:50.3|Info|DownloadDecisionMaker|No results found
+2025-03-24 14:08:50.3|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2025-03-24 14:08:50.3|Debug|PendingReleaseService|Removing failed releases from pending
+2025-03-24 14:08:50.6|Debug|SeriesService|Tags not updated for 'The Bear'
+2025-03-24 14:08:50.7|Info|RefreshEpisodeService|Starting episode info refresh for: [403294][The Bear]
+2025-03-24 14:08:50.7|Debug|RefreshEpisodeService|Not adjusting multi-episode air times for series The Bear season 1 since more than 3 episodes 'aired' on the same day
+2025-03-24 14:08:50.7|Debug|RefreshEpisodeService|Not adjusting multi-episode air times for series The Bear season 2 since more than 3 episodes 'aired' on the same day
+2025-03-24 14:08:50.7|Debug|RefreshEpisodeService|Not adjusting multi-episode air times for series The Bear season 3 since more than 3 episodes 'aired' on the same day
+2025-03-24 14:08:50.7|Debug|EpisodeRefreshedService|Newly added episodes all air in the future
+2025-03-24 14:08:50.7|Debug|EpisodeRefreshedService|No updated episodes recently aired and had absolute episode number added
+2025-03-24 14:08:50.7|Info|RefreshEpisodeService|Finished episode refresh for series: [403294][The Bear].
+2025-03-24 14:08:50.7|Debug|RefreshSeriesService|Finished series refresh for The Bear
+2025-03-24 14:08:50.7|Debug|XemProxy|Fetching Series IDs from
+2025-03-24 14:08:50.8|Debug|XemService|Scene numbering is not available for The Bear [403294]
+2025-03-24 14:08:50.8|Debug|SeriesService|Tags not updated for 'The Bear'
+2025-03-24 14:08:50.8|Warn|DiskScanService|Series' root folder (/downloads) is empty.
+2025-03-24 14:11:57.6|Info|Microsoft.Hosting.Lifetime|Application is shutting down...
+2025-03-24 14:11:57.7|Info|ConsoleApp|Exiting main.
+2025-03-24 14:12:04.2|Debug|ProcessProvider|Found 0 processes with the name: Sonarr.Console
+2025-03-24 14:12:04.2|Debug|ProcessProvider|Found 1 processes with the name: Sonarr
+2025-03-24 14:12:04.2|Debug|ProcessProvider| - [149] Sonarr
+2025-03-24 14:12:04.3|Info|MigrationController|*** Migrating data source=/config/sonarr.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:12:04.4|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:12:04.4|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:12:04.4|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:12:04.5|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0613363s
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0672617s
+2025-03-24 14:12:04.5|Debug|MigrationController|Took: 00:00:00.1960704
+2025-03-24 14:12:04.5|Info|MigrationController|*** Migrating data source=/config/logs.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:12:04.5|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:12:04.5|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0093768s
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:12:04.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0121253s
+2025-03-24 14:12:04.5|Debug|MigrationController|Took: 00:00:00.0337614
+2025-03-24 14:12:04.8|Info|Microsoft.Hosting.Lifetime|Now listening on: http://[::]:8989
+2025-03-24 14:12:04.9|Debug|QualityDefinitionService|Setting up default quality config
+2025-03-24 14:12:05.0|Debug|NotificationFactory|Initializing Providers. Count 25
+2025-03-24 14:12:05.0|Debug|IndexerFactory|Initializing Providers. Count 10
+2025-03-24 14:12:05.0|Debug|ImportListFactory|Initializing Providers. Count 11
+2025-03-24 14:12:05.0|Debug|MetadataFactory|Initializing Providers. Count 5
+2025-03-24 14:12:05.0|Debug|DownloadClientFactory|Initializing Providers. Count 18
+2025-03-24 14:12:05.1|Info|Microsoft.Hosting.Lifetime|Application started. Press Ctrl+C to shut down.
+2025-03-24 14:12:05.1|Info|Microsoft.Hosting.Lifetime|Hosting environment: Production
+2025-03-24 14:12:05.1|Info|Microsoft.Hosting.Lifetime|Content root path: /app/sonarr/bin
+2025-03-24 14:12:05.1|Info|ManagedHttpDispatcher|IPv4 is available: True, IPv6 will be disabled
+2025-03-24 14:12:05.7|Debug|Sonarr.Http.Authentication.ApiKeyAuthenticationHandler|AuthenticationScheme: API was not authenticated.
+2025-03-24 14:14:05.1|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:19:05.1|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:24:05.1|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:24:05.1|Info|RssSyncService|Starting RSS Sync
+2025-03-24 14:24:05.2|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2025-03-24 14:24:05.2|Info|DownloadDecisionMaker|No results found
+2025-03-24 14:24:05.2|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2025-03-24 14:24:05.2|Debug|PendingReleaseService|Removing failed releases from pending
+2025-03-24 14:24:39.6|Info|Microsoft.Hosting.Lifetime|Application is shutting down...
+2025-03-24 14:24:39.6|Info|ConsoleApp|Exiting main.
+2025-03-24 14:24:44.1|Debug|ProcessProvider|Found 0 processes with the name: Sonarr.Console
+2025-03-24 14:24:44.1|Debug|ProcessProvider|Found 1 processes with the name: Sonarr
+2025-03-24 14:24:44.1|Debug|ProcessProvider| - [143] Sonarr
+2025-03-24 14:24:44.2|Info|MigrationController|*** Migrating data source=/config/sonarr.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:24:44.2|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:24:44.2|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:24:44.2|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:24:44.3|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0443669s
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0466054s
+2025-03-24 14:24:44.3|Debug|MigrationController|Took: 00:00:00.1480330
+2025-03-24 14:24:44.3|Info|MigrationController|*** Migrating data source=/config/logs.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:24:44.3|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:24:44.3|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0069457s
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:24:44.3|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0079854s
+2025-03-24 14:24:44.3|Debug|MigrationController|Took: 00:00:00.0240857
+2025-03-24 14:24:44.6|Info|Microsoft.Hosting.Lifetime|Now listening on: http://[::]:8989
+2025-03-24 14:24:44.7|Debug|QualityDefinitionService|Setting up default quality config
+2025-03-24 14:24:44.7|Debug|NotificationFactory|Initializing Providers. Count 25
+2025-03-24 14:24:44.7|Debug|IndexerFactory|Initializing Providers. Count 10
+2025-03-24 14:24:44.7|Debug|ImportListFactory|Initializing Providers. Count 11
+2025-03-24 14:24:44.7|Debug|MetadataFactory|Initializing Providers. Count 5
+2025-03-24 14:24:44.7|Debug|DownloadClientFactory|Initializing Providers. Count 18
+2025-03-24 14:24:44.8|Info|Microsoft.Hosting.Lifetime|Application started. Press Ctrl+C to shut down.
+2025-03-24 14:24:44.8|Info|Microsoft.Hosting.Lifetime|Hosting environment: Production
+2025-03-24 14:24:44.8|Info|Microsoft.Hosting.Lifetime|Content root path: /app/sonarr/bin
+2025-03-24 14:24:44.8|Info|ManagedHttpDispatcher|IPv4 is available: True, IPv6 will be disabled
+2025-03-24 14:24:45.6|Debug|Sonarr.Http.Authentication.ApiKeyAuthenticationHandler|AuthenticationScheme: API was not authenticated.
+2025-03-24 14:27:36.3|Info|Microsoft.Hosting.Lifetime|Application is shutting down...
+2025-03-24 14:27:36.3|Info|ConsoleApp|Exiting main.
+2025-03-24 14:27:41.4|Debug|ProcessProvider|Found 0 processes with the name: Sonarr.Console
+2025-03-24 14:27:41.4|Debug|ProcessProvider|Found 1 processes with the name: Sonarr
+2025-03-24 14:27:41.4|Debug|ProcessProvider| - [141] Sonarr
+2025-03-24 14:27:41.4|Info|MigrationController|*** Migrating data source=/config/sonarr.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:27:41.5|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:27:41.5|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:27:41.5|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:27:41.5|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:27:41.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0399587s
+2025-03-24 14:27:41.5|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:27:41.5|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0421814s
+2025-03-24 14:27:41.6|Debug|MigrationController|Took: 00:00:00.1350108
+2025-03-24 14:27:41.6|Info|MigrationController|*** Migrating data source=/config/logs.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2025-03-24 14:27:41.6|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2025-03-24 14:27:41.6|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2025-03-24 14:27:41.6|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2025-03-24 14:27:41.6|Info|DatabaseEngineVersionCheck|SQLite 3.48.0
+2025-03-24 14:27:41.6|Info|FluentMigrator.Runner.MigrationRunner|=> 0.006945s
+2025-03-24 14:27:41.6|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2025-03-24 14:27:41.6|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0085908s
+2025-03-24 14:27:41.6|Debug|MigrationController|Took: 00:00:00.0260471
+2025-03-24 14:27:41.8|Info|Microsoft.Hosting.Lifetime|Now listening on: http://[::]:8989
+2025-03-24 14:27:41.9|Debug|QualityDefinitionService|Setting up default quality config
+2025-03-24 14:27:41.9|Debug|Sonarr.Http.Authentication.ApiKeyAuthenticationHandler|AuthenticationScheme: API was not authenticated.
+2025-03-24 14:27:42.0|Debug|NotificationFactory|Initializing Providers. Count 25
+2025-03-24 14:27:42.0|Debug|IndexerFactory|Initializing Providers. Count 10
+2025-03-24 14:27:42.0|Debug|ImportListFactory|Initializing Providers. Count 11
+2025-03-24 14:27:42.0|Debug|MetadataFactory|Initializing Providers. Count 5
+2025-03-24 14:27:42.0|Debug|DownloadClientFactory|Initializing Providers. Count 18
+2025-03-24 14:27:42.0|Info|Microsoft.Hosting.Lifetime|Application started. Press Ctrl+C to shut down.
+2025-03-24 14:27:42.0|Info|Microsoft.Hosting.Lifetime|Hosting environment: Production
+2025-03-24 14:27:42.0|Info|Microsoft.Hosting.Lifetime|Content root path: /app/sonarr/bin
+2025-03-24 14:27:42.1|Info|ManagedHttpDispatcher|IPv4 is available: True, IPv6 will be disabled
+2025-03-24 14:29:12.1|Debug|ImportListSyncService|No import lists with automatic add enabled
+2025-03-24 14:29:46.4|Info|Microsoft.Hosting.Lifetime|Application is shutting down...
+2025-03-24 14:29:46.5|Info|ConsoleApp|Exiting main.
