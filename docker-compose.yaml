@@ -1,35 +1,123 @@
+name: home-server
+
+x-common-env: &common-env
+  PUID: ${PUID:-1000}
+  PGID: ${PGID:-1000}
+  TZ: ${TZ:-Europe/Lisbon}
+
 services:
   traefik:
     image: traefik:latest
     container_name: traefik
     command:
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
     ports:
       - "80:80"
+      - "8088:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - traefik.enable=true
-      - traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.dashboard.service=api@internal
-      - traefik.http.routers.dashboard.entrypoints=web
-      - traefik.http.routers.dashboard.middlewares=auth
-      - traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_AUTH}
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.middlewares=traefik-auth
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_AUTH}
     networks:
-      - traefik_net
+      - proxy
+    restart: unless-stopped
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "*"
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ${CONFIG_ROOT}/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)
+      - traefik.http.routers.homepage.entrypoints=web
+      - traefik.http.services.homepage.loadbalancer.server.port=3000
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_ROOT}/portainer:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)
+      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: uptime-kuma
+    ports:
+      - "3001:3001"
+    volumes:
+      - ${DATA_ROOT}/uptime-kuma:/app/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.uptime-kuma.rule=Host(`status.${DOMAIN}`)
+      - traefik.http.routers.uptime-kuma.entrypoints=web
+      - traefik.http.services.uptime-kuma.loadbalancer.server.port=3001
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    container_name: filebrowser
+    user: "${PUID:-1000}:${PGID:-1000}"
+    ports:
+      - "8082:80"
+    volumes:
+      - ${CONFIG_ROOT}/filebrowser:/config
+      - ${MEDIA_ROOT}:/srv/media
+      - ${DOWNLOADS_ROOT}:/srv/downloads
+      - ${PHOTOS_ROOT}:/srv/photos
+      - ${DATA_ROOT}:/srv/data
+    command:
+      - --database
+      - /config/filebrowser.db
+      - --root
+      - /srv
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.filebrowser.rule=Host(`files.${DOMAIN}`)
+      - traefik.http.routers.filebrowser.entrypoints=web
+      - traefik.http.services.filebrowser.loadbalancer.server.port=80
+    networks:
+      - proxy
     restart: unless-stopped
 
   actual-budget:
     image: actualbudget/actual-server:latest
     container_name: actual-budget
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
+      <<: *common-env
     volumes:
       - ${DATA_ROOT}/actual-budget:/data
     labels:
@@ -38,9 +126,357 @@ services:
       - traefik.http.routers.actual-budget.entrypoints=web
       - traefik.http.services.actual-budget.loadbalancer.server.port=5006
     networks:
-      - traefik_net
+      - proxy
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    environment:
+      ENABLE_RAG_WEB_SEARCH: "True"
+      RAG_WEB_SEARCH_ENGINE: searxng
+      RAG_WEB_SEARCH_RESULT_COUNT: "3"
+      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: "10"
+      SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
+    volumes:
+      - ${DATA_ROOT}/open-webui:/app/backend/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.open-webui.rule=Host(`openwebui.${DOMAIN}`)
+      - traefik.http.routers.open-webui.entrypoints=web
+      - traefik.http.services.open-webui.loadbalancer.server.port=8080
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./searxng:/etc/searxng:rw
+    env_file:
+      - .env
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: "1"
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      <<: *common-env
+    ports:
+      - "8096:8096"
+      - "8920:8920"
+    volumes:
+      - ${CONFIG_ROOT}/jellyfin:/config
+      - ${MEDIA_ROOT}:/media
+      - ${DATA_ROOT}/jellyfin-cache:/cache
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)
+      - traefik.http.routers.jellyfin.entrypoints=web
+      - traefik.http.services.jellyfin.loadbalancer.server.port=8096
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      LOG_LEVEL: info
+      TZ: ${TZ:-Europe/Lisbon}
+    ports:
+      - "5055:5055"
+    volumes:
+      - ${CONFIG_ROOT}/jellyseerr:/app/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.jellyseerr.rule=Host(`request.${DOMAIN}`)
+      - traefik.http.routers.jellyseerr.entrypoints=web
+      - traefik.http.services.jellyseerr.loadbalancer.server.port=5055
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      <<: *common-env
+      WEBUI_PORT: 8081
+      TORRENTING_PORT: 6881
+    ports:
+      - "8081:8081"
+      - "6881:6881"
+      - "6881:6881/udp"
+    volumes:
+      - ${CONFIG_ROOT}/qbittorrent:/config
+      - ${DOWNLOADS_ROOT}:/downloads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.qbittorrent.rule=Host(`torrent.${DOMAIN}`)
+      - traefik.http.routers.qbittorrent.entrypoints=web
+      - traefik.http.services.qbittorrent.loadbalancer.server.port=8081
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      <<: *common-env
+    ports:
+      - "9696:9696"
+    volumes:
+      - ${CONFIG_ROOT}/prowlarr:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prowlarr.rule=Host(`indexers.${DOMAIN}`)
+      - traefik.http.routers.prowlarr.entrypoints=web
+      - traefik.http.services.prowlarr.loadbalancer.server.port=9696
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      <<: *common-env
+    ports:
+      - "8989:8989"
+    volumes:
+      - ${CONFIG_ROOT}/sonarr:/config
+      - ${MEDIA_ROOT}/tv:/tv
+      - ${DOWNLOADS_ROOT}:/downloads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
+      - traefik.http.routers.sonarr.entrypoints=web
+      - traefik.http.services.sonarr.loadbalancer.server.port=8989
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      <<: *common-env
+    ports:
+      - "7878:7878"
+    volumes:
+      - ${CONFIG_ROOT}/radarr:/config
+      - ${MEDIA_ROOT}/movies:/movies
+      - ${DOWNLOADS_ROOT}:/downloads
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
+      - traefik.http.routers.radarr.entrypoints=web
+      - traefik.http.services.radarr.loadbalancer.server.port=7878
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      <<: *common-env
+    ports:
+      - "6767:6767"
+    volumes:
+      - ${CONFIG_ROOT}/bazarr:/config
+      - ${MEDIA_ROOT}/movies:/movies
+      - ${MEDIA_ROOT}/tv:/tv
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bazarr.rule=Host(`subtitles.${DOMAIN}`)
+      - traefik.http.routers.bazarr.entrypoints=web
+      - traefik.http.services.bazarr.loadbalancer.server.port=6767
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  emulatorjs:
+    image: lscr.io/linuxserver/emulatorjs:1.9.2-ls173
+    container_name: emulatorjs
+    environment:
+      <<: *common-env
+      SUBFOLDER: /
+    ports:
+      - "3003:3000"
+      - "8085:80"
+      - "4001:4001"
+    volumes:
+      - ${CONFIG_ROOT}/emulatorjs:/config
+      - ${DATA_ROOT}/emulatorjs:/data
+      - ${ROMS_LIBRARY_ROOT}:/data/roms
+      - ${ROMS_BIOS_ROOT}:/data/bios
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.emulatorjs.rule=Host(`arcade.${DOMAIN}`)
+      - traefik.http.routers.emulatorjs.entrypoints=web
+      - traefik.http.services.emulatorjs.loadbalancer.server.port=80
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  romm-db:
+    image: mariadb:latest
+    container_name: romm-db
+    environment:
+      MARIADB_ROOT_PASSWORD: ${ROMM_DB_ROOT_PASSWORD:-change-me}
+      MARIADB_DATABASE: ${ROMM_DB_NAME:-romm}
+      MARIADB_USER: ${ROMM_DB_USER:-romm}
+      MARIADB_PASSWORD: ${ROMM_DB_PASSWORD:-change-me}
+      TZ: ${TZ:-Europe/Lisbon}
+    volumes:
+      - ${DATA_ROOT}/romm/db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - romm
+    restart: unless-stopped
+
+  romm:
+    image: rommapp/romm:latest
+    container_name: romm
+    depends_on:
+      romm-db:
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+      ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY:-change-me}
+      DB_HOST: romm-db
+      DB_NAME: ${ROMM_DB_NAME:-romm}
+      DB_USER: ${ROMM_DB_USER:-romm}
+      DB_PASSWD: ${ROMM_DB_PASSWORD:-change-me}
+      ROMM_BASE_URL: http://localhost:8086
+    ports:
+      - "8086:8080"
+    volumes:
+      - ${ROMS_LIBRARY_ROOT}:/romm/library
+      - ${DATA_ROOT}/romm/assets:/romm/assets
+      - ${DATA_ROOT}/romm/resources:/romm/resources
+      - ${CONFIG_ROOT}/romm:/romm/config
+      - ${DATA_ROOT}/romm/redis-data:/redis-data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.romm.rule=Host(`roms.${DOMAIN}`)
+      - traefik.http.routers.romm.entrypoints=web
+      - traefik.http.services.romm.loadbalancer.server.port=8080
+    networks:
+      - proxy
+      - romm
+    restart: unless-stopped
+
+  immich-server:
+    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    container_name: immich-server
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+      DB_HOSTNAME: immich-postgres
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-immichpass}
+      DB_DATABASE_NAME: ${DB_DATABASE_NAME:-immich}
+      REDIS_HOSTNAME: immich-redis
+    ports:
+      - "2283:2283"
+    volumes:
+      - ${UPLOAD_LOCATION}:/usr/src/app/upload
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - immich-redis
+      - immich-postgres
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.immich.rule=Host(`photos.${DOMAIN}`)
+      - traefik.http.routers.immich.entrypoints=web
+      - traefik.http.services.immich.loadbalancer.server.port=2283
+    networks:
+      - proxy
+      - immich
+    restart: unless-stopped
+
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    container_name: immich-machine-learning
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+    volumes:
+      - ${DATA_ROOT}/immich/model-cache:/cache
+    networks:
+      - immich
+    restart: unless-stopped
+
+  immich-redis:
+    image: redis:7-alpine
+    container_name: immich-redis
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - ${DATA_ROOT}/immich/redis:/data
+    networks:
+      - immich
+    restart: unless-stopped
+
+  immich-postgres:
+    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    container_name: immich-postgres
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-immichpass}
+      POSTGRES_DB: ${DB_DATABASE_NAME:-immich}
+      TZ: ${TZ:-Europe/Lisbon}
+    volumes:
+      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+    networks:
+      - immich
+    restart: unless-stopped
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+    ports:
+      - "8123:8123"
+    volumes:
+      - ${CONFIG_ROOT}/homeassistant:/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.homeassistant.rule=Host(`ha.${DOMAIN}`)
+      - traefik.http.routers.homeassistant.entrypoints=web
+      - traefik.http.services.homeassistant.loadbalancer.server.port=8123
+    networks:
+      - proxy
     restart: unless-stopped
 
 networks:
-  traefik_net:
+  proxy:
+    driver: bridge
+  immich:
+    driver: bridge
+  romm:
     driver: bridge

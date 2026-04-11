@@ -1,0 +1,17 @@
+title: Home Server
+theme: dark
+color: slate
+headerStyle: boxed
+layout:
+  Media:
+    style: row
+    columns: 3
+  Admin:
+    style: row
+    columns: 3
+  Photos:
+    style: row
+    columns: 3
+  Tools:
+    style: row
+    columns: 3

@@ -4579,3 +4579,223 @@
 2025-03-24 14:29:12.1|Debug|ImportListSyncService|No import lists with automatic add enabled
 2025-03-24 14:29:46.4|Info|Microsoft.Hosting.Lifetime|Application is shutting down...
 2025-03-24 14:29:46.5|Info|ConsoleApp|Exiting main.
+2026-04-11 19:12:26.5|Debug|ProcessProvider|Found 0 processes with the name: Sonarr.Console
+2026-04-11 19:12:26.5|Debug|ProcessProvider|Found 1 processes with the name: Sonarr
+2026-04-11 19:12:26.5|Debug|ProcessProvider| - [152] Sonarr
+2026-04-11 19:12:26.5|Info|MigrationController|*** Migrating data source=/config/sonarr.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2026-04-11 19:12:26.7|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2026-04-11 19:12:26.7|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2026-04-11 19:12:26.7|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2026-04-11 19:12:26.8|Info|DatabaseEngineVersionCheck|SQLite 3.51.2
+2026-04-11 19:12:26.9|Info|FluentMigrator.Runner.MigrationRunner|=> 0.139361s
+2026-04-11 19:12:26.9|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2026-04-11 19:12:26.9|Info|FluentMigrator.Runner.MigrationRunner|=> 0.1612259s
+2026-04-11 19:12:27.0|Debug|MigrationController|Took: 00:00:00.4392524
+2026-04-11 19:12:27.0|Info|MigrationController|*** Migrating data source=/config/logs.db;cache size=-20000;datetimekind=Utc;journal mode=Wal;pooling=True;version=3;busytimeout=100 ***
+2026-04-11 19:12:27.0|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrating
+2026-04-11 19:12:27.0|Info|FluentMigrator.Runner.MigrationRunner|PerformDBOperation 
+2026-04-11 19:12:27.0|Info|NzbDrone.Core.Datastore.Migration.Framework.NzbDroneSQLiteProcessor|Performing DB Operation
+2026-04-11 19:12:27.1|Info|DatabaseEngineVersionCheck|SQLite 3.51.2
+2026-04-11 19:12:27.1|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0236677s
+2026-04-11 19:12:27.1|Info|FluentMigrator.Runner.MigrationRunner|DatabaseEngineVersionCheck migrated
+2026-04-11 19:12:27.1|Info|FluentMigrator.Runner.MigrationRunner|=> 0.0349248s
+2026-04-11 19:12:27.1|Debug|MigrationController|Took: 00:00:00.0878049
+2026-04-11 19:12:27.6|Info|Microsoft.Hosting.Lifetime|Now listening on: http://[::]:8989
+2026-04-11 19:12:27.8|Debug|QualityDefinitionService|Setting up default quality config
+2026-04-11 19:12:27.9|Debug|NotificationFactory|Initializing Providers. Count 25
+2026-04-11 19:12:28.0|Debug|IndexerFactory|Initializing Providers. Count 10
+2026-04-11 19:12:28.0|Debug|ImportListFactory|Initializing Providers. Count 11
+2026-04-11 19:12:28.0|Debug|MetadataFactory|Initializing Providers. Count 5
+2026-04-11 19:12:28.0|Debug|DownloadClientFactory|Initializing Providers. Count 18
+2026-04-11 19:12:28.0|Info|Microsoft.Hosting.Lifetime|Application started. Press Ctrl+C to shut down.
+2026-04-11 19:12:28.0|Info|Microsoft.Hosting.Lifetime|Hosting environment: Production
+2026-04-11 19:12:28.0|Info|Microsoft.Hosting.Lifetime|Content root path: /app/sonarr/bin
+2026-04-11 19:12:28.1|Info|ManagedHttpDispatcher|IPv4 is available: True, IPv6 will be disabled
+2026-04-11 19:12:28.7|Debug|Sonarr.Http.Authentication.ApiKeyAuthenticationHandler|AuthenticationScheme: API was not authenticated.
+2026-04-11 19:12:58.0|Debug|InstallUpdateService|Checking for updates
+2026-04-11 19:12:58.0|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:12:58.1|Info|HousekeepingService|Running housecleaning tasks
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupAbsolutePathMetadataFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupAbsolutePathMetadataFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupAdditionalNamingSpecs
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupAdditionalNamingSpecs
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupAdditionalUsers
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupAdditionalUsers
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupCommandQueue
+2026-04-11 19:12:58.1|Debug|InstallUpdateService|No update available
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupCommandQueue
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupDownloadClientUnavailablePendingReleases
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupDownloadClientUnavailablePendingReleases
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupDuplicateMetadataFiles
+2026-04-11 19:12:58.1|Info|SceneMappingService|Updating Scene mappings
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupDuplicateMetadataFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedBlocklist
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedBlocklist
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedDownloadClientStatus
+2026-04-11 19:12:58.1|Info|BackupService|Starting Backup
+2026-04-11 19:12:58.1|Debug|XemProxy|Fetching alternate names
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedDownloadClientStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedEpisodeFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedEpisodeFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedEpisodes
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedEpisodes
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedHistoryItems
+2026-04-11 19:12:58.1|Debug|BackupService|Cleaning up backup files older than 28 days
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedHistoryItems
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedImportListStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedImportListStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedIndexerStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedIndexerStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedMetadataFiles
+2026-04-11 19:12:58.1|Debug|BackupService|Deleting old backup file: /config/Backups/scheduled/sonarr_backup_v4.0.14.2939_2025.03.24_14.08.49.zip
+2026-04-11 19:12:58.1|Debug|BackupService|Finished cleaning up old backup files
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedMetadataFiles
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedNotificationStatus
+2026-04-11 19:12:58.1|Debug|BackupService|Backing up config.xml
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedNotificationStatus
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupOrphanedPendingReleases
+2026-04-11 19:12:58.1|Debug|DiskTransferService|Copy [/config/config.xml] > [/run/sonarr-temp/sonarr_backup/config.xml]
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Completed CleanupOrphanedPendingReleases
+2026-04-11 19:12:58.1|Debug|HousekeepingService|Starting CleanupQualityProfileFormatItems
+2026-04-11 19:12:58.2|Debug|BackupService|Backing up database
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed CleanupQualityProfileFormatItems
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting CleanupTemporaryUpdateFiles
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed CleanupTemporaryUpdateFiles
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting CleanupUnusedTags
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed CleanupUnusedTags
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting DeleteBadMediaCovers
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed DeleteBadMediaCovers
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting FixFutureDownloadClientStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed FixFutureDownloadClientStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting FixFutureImportListStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed FixFutureImportListStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting FixFutureIndexerStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed FixFutureIndexerStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting FixFutureNotificationStatusTimes
+2026-04-11 19:12:58.2|Debug|BackupService|Creating backup zip
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed FixFutureNotificationStatusTimes
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting FixFutureRunScheduledTasks
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed FixFutureRunScheduledTasks
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting TrimLogDatabase
+2026-04-11 19:12:58.2|Debug|ArchiveService|Creating archive /config/Backups/scheduled/sonarr_backup_v4.0.17.2952_2026.04.11_19.12.58.zip
+2026-04-11 19:12:58.2|Info|Database|Vacuuming Log database
+2026-04-11 19:12:58.2|Info|Database|Log database compressed
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed TrimLogDatabase
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Starting UpdateCleanTitleForSeries
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Completed UpdateCleanTitleForSeries
+2026-04-11 19:12:58.2|Debug|HousekeepingService|Compressing main database after housekeeping
+2026-04-11 19:12:58.2|Info|Database|Vacuuming Main database
+2026-04-11 19:12:58.4|Info|Database|Main database compressed
+2026-04-11 19:12:58.5|Debug|BackupService|Backup zip created
+2026-04-11 19:12:58.5|Info|RecycleBinProvider|Recycle Bin has not been configured, cannot cleanup.
+2026-04-11 19:12:58.7|Info|RssSyncService|Starting RSS Sync
+2026-04-11 19:12:58.7|Info|RefreshSeriesService|Updating The Bear
+2026-04-11 19:12:58.7|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 19:12:58.7|Info|DownloadDecisionMaker|No results found
+2026-04-11 19:12:58.7|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 19:12:58.7|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 19:13:03.7|Error|RefreshSeriesService|Couldn't refresh info for [403294][The Bear]
+
+[v4.0.17.2952] System.Net.Http.HttpRequestException: Resource temporarily unavailable (skyhook.sonarr.tv:443)
+ ---> System.Net.Sockets.SocketException (11): Resource temporarily unavailable
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|277_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at NzbDrone.Common.Http.Dispatchers.ManagedHttpDispatcher.attemptConnection(AddressFamily addressFamily, SocketsHttpConnectionContext context, CancellationToken cancellationToken) in ./Sonarr.Common/Http/Dispatchers/ManagedHttpDispatcher.cs:line 327
+   at NzbDrone.Common.Http.Dispatchers.ManagedHttpDispatcher.onConnect(SocketsHttpConnectionContext context, CancellationToken cancellationToken) in ./Sonarr.Common/Http/Dispatchers/ManagedHttpDispatcher.cs:line 313
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnectionPool.ConnectToTcpHostAsync(String host, Int32 port, HttpRequestMessage initialRequest, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.AddHttp2ConnectionAsync(HttpRequestMessage request)
+   at System.Threading.Tasks.TaskCompletionSourceWithCancellation`1.WaitWithCancellationAsync(CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.GetHttp2ConnectionAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.AuthenticationHelper.SendWithAuthAsync(HttpRequestMessage request, Uri authUri, Boolean async, ICredentials credentials, Boolean preAuthenticate, Boolean isProxyAuth, Boolean doRequestAuth, HttpConnectionPool pool, CancellationToken cancellationToken)
+   at System.Net.Http.DecompressionHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at NzbDrone.Common.Http.Dispatchers.ManagedHttpDispatcher.GetResponseAsync(HttpRequest request, CookieContainer cookies) in ./Sonarr.Common/Http/Dispatchers/ManagedHttpDispatcher.cs:line 115
+   at NzbDrone.Common.Http.HttpClient.ExecuteRequestAsync(HttpRequest request, CookieContainer cookieContainer) in ./Sonarr.Common/Http/HttpClient.cs:line 157
+   at NzbDrone.Common.Http.HttpClient.ExecuteAsync(HttpRequest request) in ./Sonarr.Common/Http/HttpClient.cs:line 70
+   at NzbDrone.Common.Http.HttpClient.GetAsync[T](HttpRequest request) in ./Sonarr.Common/Http/HttpClient.cs:line 333
+   at NzbDrone.Common.Http.HttpClient.Get[T](HttpRequest request) in ./Sonarr.Common/Http/HttpClient.cs:line 341
+   at NzbDrone.Core.MetadataSource.SkyHook.SkyHookProxy.GetSeriesInfo(Int32 tvdbSeriesId) in ./Sonarr.Core/MetadataSource/SkyHook/SkyHookProxy.cs:line 52
+   at NzbDrone.Core.Tv.RefreshSeriesService.RefreshSeriesInfo(Int32 seriesId) in ./Sonarr.Core/Tv/RefreshSeriesService.cs:line 67
+   at NzbDrone.Core.Tv.RefreshSeriesService.Execute(RefreshSeriesCommand message) in ./Sonarr.Core/Tv/RefreshSeriesService.cs:line 249
+
+2026-04-11 19:13:03.8|Debug|SeriesService|Tags not updated for 'The Bear'
+2026-04-11 19:13:03.8|Warn|DiskScanService|Series' root folder (/downloads) is empty.
+2026-04-11 19:17:58.2|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:22:58.5|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:27:58.6|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:28:28.6|Info|RssSyncService|Starting RSS Sync
+2026-04-11 19:28:28.6|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 19:28:28.6|Info|DownloadDecisionMaker|No results found
+2026-04-11 19:28:28.6|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 19:28:28.6|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 19:32:58.7|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:37:58.8|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:59:13.3|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 19:59:13.3|Info|RssSyncService|Starting RSS Sync
+2026-04-11 19:59:13.4|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 19:59:13.4|Info|DownloadDecisionMaker|No results found
+2026-04-11 19:59:13.4|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 19:59:13.4|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 20:16:32.4|Info|RssSyncService|Starting RSS Sync
+2026-04-11 20:16:32.4|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 20:16:32.4|Info|DownloadDecisionMaker|No results found
+2026-04-11 20:16:32.4|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 20:16:32.4|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 20:16:32.4|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 20:33:33.5|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 20:33:33.5|Info|RssSyncService|Starting RSS Sync
+2026-04-11 20:33:33.5|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 20:33:33.5|Info|DownloadDecisionMaker|No results found
+2026-04-11 20:33:33.5|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 20:33:33.5|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 20:50:42.5|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 20:50:42.5|Info|RssSyncService|Starting RSS Sync
+2026-04-11 20:50:42.5|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 20:50:42.5|Info|DownloadDecisionMaker|No results found
+2026-04-11 20:50:42.5|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 20:50:42.5|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 21:07:00.9|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 21:07:00.9|Info|RssSyncService|Starting RSS Sync
+2026-04-11 21:07:00.9|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 21:07:00.9|Info|DownloadDecisionMaker|No results found
+2026-04-11 21:07:00.9|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 21:07:00.9|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 21:23:35.9|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 21:23:35.9|Info|RssSyncService|Starting RSS Sync
+2026-04-11 21:23:35.9|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 21:23:35.9|Info|DownloadDecisionMaker|No results found
+2026-04-11 21:23:35.9|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 21:23:35.9|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 21:32:38.0|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 21:37:51.4|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 21:38:51.4|Info|RssSyncService|Starting RSS Sync
+2026-04-11 21:38:51.4|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 21:38:51.4|Info|DownloadDecisionMaker|No results found
+2026-04-11 21:38:51.4|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 21:38:51.4|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 21:42:51.5|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 22:00:45.9|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 22:00:45.9|Info|RssSyncService|Starting RSS Sync
+2026-04-11 22:00:45.9|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 22:00:45.9|Info|DownloadDecisionMaker|No results found
+2026-04-11 22:00:45.9|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 22:00:45.9|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 22:20:04.4|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 22:20:04.4|Info|SceneMappingService|Updating Scene mappings
+2026-04-11 22:20:04.5|Debug|XemProxy|Fetching alternate names
+2026-04-11 22:20:04.5|Info|RssSyncService|Starting RSS Sync
+2026-04-11 22:20:04.5|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 22:20:04.5|Info|DownloadDecisionMaker|No results found
+2026-04-11 22:20:04.5|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 22:20:04.5|Debug|PendingReleaseService|Removing failed releases from pending
+2026-04-11 22:38:07.8|Debug|ImportListSyncService|No import lists with automatic add enabled
+2026-04-11 22:38:07.8|Info|RssSyncService|Starting RSS Sync
+2026-04-11 22:38:07.8|Warn|FetchAndParseRssService|No available indexers. check your configuration.
+2026-04-11 22:38:07.8|Info|DownloadDecisionMaker|No results found
+2026-04-11 22:38:07.8|Info|RssSyncService|RSS Sync Completed. Reports found: 0, Reports grabbed: 0
+2026-04-11 22:38:07.8|Debug|PendingReleaseService|Removing failed releases from pending

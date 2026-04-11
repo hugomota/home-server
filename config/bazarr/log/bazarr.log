@@ -1,8 +1,4 @@
-2025-03-24 14:08:23|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://***.***.***.***:6767|
-2025-03-24 14:08:23|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://[::]:6767|
-2025-03-24 14:12:08|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://***.***.***.***:6767|
-2025-03-24 14:12:08|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://[::]:6767|
-2025-03-24 14:24:48|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://***.***.***.***:6767|
-2025-03-24 14:24:48|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://[::]:6767|
-2025-03-24 14:27:45|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://***.***.***.***:6767|
-2025-03-24 14:27:45|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://[::]:6767|
+2026-04-11 19:12:38|INFO    |root                            |Scheduler will use this timezone: Europe/Lisbon|
+2026-04-11 19:12:39|INFO    |root                            |Interactive jobs queue started and waiting for tasks|
+2026-04-11 19:12:39|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://***.***.***.***:6767|
+2026-04-11 19:12:39|INFO    |waitress                        |BAZARR is started and waiting for requests on: http://[::]:6767|

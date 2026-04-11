@@ -1,0 +1,54 @@
+- Media:
+    - Jellyfin:
+        href: http://localhost:8096
+        description: Stream movies and TV
+        icon: jellyfin.png
+        container: jellyfin
+    - RomM:
+        href: http://localhost:8086
+        description: Manage your own ROM library
+        icon: mdi-controller-classic
+        container: romm
+    - Jellyseerr:
+        href: http://localhost:5055
+        description: Request movies and shows
+        icon: jellyseerr.png
+        container: jellyseerr
+- Admin:
+    - Portainer:
+        href: http://localhost:9000
+        description: Docker admin
+        icon: portainer.png
+        container: portainer
+    - Uptime Kuma:
+        href: http://localhost:3001
+        description: Health checks
+        icon: uptime-kuma.png
+        container: uptime-kuma
+    - Home Assistant:
+        href: http://localhost:8123
+        description: Smart home control
+        icon: home-assistant.png
+        container: homeassistant
+- Photos:
+    - Immich:
+        href: http://localhost:2283
+        description: Photo and image manager
+        icon: immich.png
+        container: immich-server
+- Tools:
+    - qBittorrent:
+        href: http://localhost:8081
+        description: Torrent downloads
+        icon: qbittorrent.png
+        container: qbittorrent
+    - Bazarr:
+        href: http://localhost:6767
+        description: Subtitle automation
+        icon: bazarr.png
+        container: bazarr
+    - EmulatorJS:
+        href: http://localhost:8085
+        description: Retro games for the TV browser
+        icon: emulatorjs.png
+        container: emulatorjs

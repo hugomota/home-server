@@ -21,6 +21,14 @@ logs/
 data/
 config/
 cache/
+!config/
+config/*
+!config/homepage/
+!config/homepage/bookmarks.yaml
+!config/homepage/docker.yaml
+!config/homepage/services.yaml
+!config/homepage/settings.yaml
+!config/homepage/widgets.yaml
 
 # Ignore media and downloads
 media/
