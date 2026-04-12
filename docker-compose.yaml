@@ -13,20 +13,26 @@ services:
       - --api.dashboard=true
       - --api.insecure=false
       - --providers.docker=true
+      - --providers.file.directory=/etc/traefik/dynamic
       - --providers.docker.exposedbydefault=false
       - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.websecure.address=:443
     ports:
       - "80:80"
+      - "443:443"
       - "8088:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${CONFIG_ROOT}/traefik/dynamic:/etc/traefik/dynamic:ro
+      - ${CONFIG_ROOT}/traefik/certs:/etc/traefik/certs:ro
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.middlewares=traefik-auth
-      - traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_AUTH}
+      - traefik.http.routers.traefik.tls=true
     networks:
       - proxy
     restart: unless-stopped
@@ -34,10 +40,11 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    user: "0:0"
     environment:
       HOMEPAGE_ALLOWED_HOSTS: "*"
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
+      PUID: "0"
+      PGID: "0"
     ports:
       - "3000:3000"
     volumes:
@@ -46,7 +53,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)
-      - traefik.http.routers.homepage.entrypoints=web
+      - traefik.http.routers.homepage.entrypoints=websecure
+      - traefik.http.routers.homepage.tls=true
       - traefik.http.services.homepage.loadbalancer.server.port=3000
     networks:
       - proxy
@@ -65,7 +73,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)
-      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.routers.portainer.entrypoints=websecure
+      - traefik.http.routers.portainer.tls=true
       - traefik.http.services.portainer.loadbalancer.server.port=9000
     networks:
       - proxy
@@ -81,7 +90,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.uptime-kuma.rule=Host(`status.${DOMAIN}`)
-      - traefik.http.routers.uptime-kuma.entrypoints=web
+      - traefik.http.routers.uptime-kuma.entrypoints=websecure
+      - traefik.http.routers.uptime-kuma.tls=true
       - traefik.http.services.uptime-kuma.loadbalancer.server.port=3001
     networks:
       - proxy
@@ -107,7 +117,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.filebrowser.rule=Host(`files.${DOMAIN}`)
-      - traefik.http.routers.filebrowser.entrypoints=web
+      - traefik.http.routers.filebrowser.entrypoints=websecure
+      - traefik.http.routers.filebrowser.tls=true
       - traefik.http.services.filebrowser.loadbalancer.server.port=80
     networks:
       - proxy
@@ -118,12 +129,15 @@ services:
     container_name: actual-budget
     environment:
       <<: *common-env
+    ports:
+      - "5006:5006"
     volumes:
       - ${DATA_ROOT}/actual-budget:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.actual-budget.rule=Host(`budget.${DOMAIN}`)
-      - traefik.http.routers.actual-budget.entrypoints=web
+      - traefik.http.routers.actual-budget.entrypoints=websecure
+      - traefik.http.routers.actual-budget.tls=true
       - traefik.http.services.actual-budget.loadbalancer.server.port=5006
     networks:
       - proxy
@@ -132,8 +146,11 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
+    depends_on:
+      - ollama
     environment:
       ENABLE_RAG_WEB_SEARCH: "True"
+      OLLAMA_BASE_URL: http://ollama:11434
       RAG_WEB_SEARCH_ENGINE: searxng
       RAG_WEB_SEARCH_RESULT_COUNT: "3"
       RAG_WEB_SEARCH_CONCURRENT_REQUESTS: "10"
@@ -143,8 +160,28 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.open-webui.rule=Host(`openwebui.${DOMAIN}`)
-      - traefik.http.routers.open-webui.entrypoints=web
+      - traefik.http.routers.open-webui.entrypoints=websecure
+      - traefik.http.routers.open-webui.tls=true
       - traefik.http.services.open-webui.loadbalancer.server.port=8080
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    extra_hosts:
+      - "registry.ollama.ai:104.21.75.227"
+    volumes:
+      - ${DATA_ROOT}/ollama:/root/.ollama
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`)
+      - traefik.http.routers.ollama.entrypoints=websecure
+      - traefik.http.routers.ollama.tls=true
+      - traefik.http.services.ollama.loadbalancer.server.port=11434
     networks:
       - proxy
     restart: unless-stopped
@@ -170,6 +207,12 @@ services:
       options:
         max-size: 1m
         max-file: "1"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.searxng.rule=Host(`search.${DOMAIN}`)
+      - traefik.http.routers.searxng.entrypoints=websecure
+      - traefik.http.routers.searxng.tls=true
+      - traefik.http.services.searxng.loadbalancer.server.port=8080
     networks:
       - proxy
     restart: unless-stopped
@@ -189,7 +232,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)
-      - traefik.http.routers.jellyfin.entrypoints=web
+      - traefik.http.routers.jellyfin.entrypoints=websecure
+      - traefik.http.routers.jellyfin.tls=true
       - traefik.http.services.jellyfin.loadbalancer.server.port=8096
     networks:
       - proxy
@@ -208,7 +252,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.jellyseerr.rule=Host(`request.${DOMAIN}`)
-      - traefik.http.routers.jellyseerr.entrypoints=web
+      - traefik.http.routers.jellyseerr.entrypoints=websecure
+      - traefik.http.routers.jellyseerr.tls=true
       - traefik.http.services.jellyseerr.loadbalancer.server.port=5055
     networks:
       - proxy
@@ -231,7 +276,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.qbittorrent.rule=Host(`torrent.${DOMAIN}`)
-      - traefik.http.routers.qbittorrent.entrypoints=web
+      - traefik.http.routers.qbittorrent.entrypoints=websecure
+      - traefik.http.routers.qbittorrent.tls=true
       - traefik.http.services.qbittorrent.loadbalancer.server.port=8081
     networks:
       - proxy
@@ -249,14 +295,15 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.prowlarr.rule=Host(`indexers.${DOMAIN}`)
-      - traefik.http.routers.prowlarr.entrypoints=web
+      - traefik.http.routers.prowlarr.entrypoints=websecure
+      - traefik.http.routers.prowlarr.tls=true
       - traefik.http.services.prowlarr.loadbalancer.server.port=9696
     networks:
       - proxy
     restart: unless-stopped
 
   sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:4.0.15.2941-ls295
     container_name: sonarr
     environment:
       <<: *common-env
@@ -269,7 +316,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
-      - traefik.http.routers.sonarr.entrypoints=web
+      - traefik.http.routers.sonarr.entrypoints=websecure
+      - traefik.http.routers.sonarr.tls=true
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
     networks:
       - proxy
@@ -289,7 +337,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
-      - traefik.http.routers.radarr.entrypoints=web
+      - traefik.http.routers.radarr.entrypoints=websecure
+      - traefik.http.routers.radarr.tls=true
       - traefik.http.services.radarr.loadbalancer.server.port=7878
     networks:
       - proxy
@@ -309,7 +358,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.bazarr.rule=Host(`subtitles.${DOMAIN}`)
-      - traefik.http.routers.bazarr.entrypoints=web
+      - traefik.http.routers.bazarr.entrypoints=websecure
+      - traefik.http.routers.bazarr.tls=true
       - traefik.http.services.bazarr.loadbalancer.server.port=6767
     networks:
       - proxy
@@ -333,7 +383,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.emulatorjs.rule=Host(`arcade.${DOMAIN}`)
-      - traefik.http.routers.emulatorjs.entrypoints=web
+      - traefik.http.routers.emulatorjs.entrypoints=websecure
+      - traefik.http.routers.emulatorjs.tls=true
       - traefik.http.services.emulatorjs.loadbalancer.server.port=80
     networks:
       - proxy
@@ -373,7 +424,7 @@ services:
       DB_NAME: ${ROMM_DB_NAME:-romm}
       DB_USER: ${ROMM_DB_USER:-romm}
       DB_PASSWD: ${ROMM_DB_PASSWORD:-change-me}
-      ROMM_BASE_URL: http://localhost:8086
+      ROMM_BASE_URL: https://roms.${DOMAIN}
     ports:
       - "8086:8080"
     volumes:
@@ -383,13 +434,72 @@ services:
       - ${CONFIG_ROOT}/romm:/romm/config
       - ${DATA_ROOT}/romm/redis-data:/redis-data
     labels:
+      - traefik.docker.network=home-server_proxy
       - traefik.enable=true
       - traefik.http.routers.romm.rule=Host(`roms.${DOMAIN}`)
-      - traefik.http.routers.romm.entrypoints=web
+      - traefik.http.routers.romm.entrypoints=websecure
+      - traefik.http.routers.romm.tls=true
       - traefik.http.services.romm.loadbalancer.server.port=8080
     networks:
       - proxy
       - romm
+    restart: unless-stopped
+
+  ghostfolio-postgres:
+    image: postgres:16-alpine
+    container_name: ghostfolio-postgres
+    environment:
+      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}
+      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}
+      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}
+      TZ: ${TZ:-Europe/Lisbon}
+    volumes:
+      - ${DATA_ROOT}/ghostfolio/postgres:/var/lib/postgresql/data
+    networks:
+      - ghostfolio
+    restart: unless-stopped
+
+  ghostfolio-redis:
+    image: redis:7-alpine
+    container_name: ghostfolio-redis
+    command: redis-server --save 60 1 --loglevel warning --requirepass ${GHOSTFOLIO_REDIS_PASSWORD:-ghostfolio-redis-pass}
+    volumes:
+      - ${DATA_ROOT}/ghostfolio/redis:/data
+    networks:
+      - ghostfolio
+    restart: unless-stopped
+
+  ghostfolio:
+    image: ghostfolio/ghostfolio:latest
+    container_name: ghostfolio
+    depends_on:
+      - ghostfolio-postgres
+      - ghostfolio-redis
+    environment:
+      ACCESS_TOKEN_SALT: ${GHOSTFOLIO_ACCESS_TOKEN_SALT}
+      DATABASE_URL: postgresql://${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}:${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}@ghostfolio-postgres:5432/${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}?sslmode=prefer
+      JWT_SECRET_KEY: ${GHOSTFOLIO_JWT_SECRET_KEY}
+      PORT: 3333
+      ROOT_URL: ${GHOSTFOLIO_ROOT_URL:-http://localhost:3333}
+      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}
+      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}
+      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}
+      REDIS_HOST: ghostfolio-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${GHOSTFOLIO_REDIS_PASSWORD:-ghostfolio-redis-pass}
+      TZ: ${TZ:-Europe/Lisbon}
+    ports:
+      - "3333:3333"
+    labels:
+      - traefik.docker.network=home-server_proxy
+      - traefik.enable=true
+      - traefik.http.routers.ghostfolio.rule=Host(`investments.${DOMAIN}`)
+      - traefik.http.routers.ghostfolio.entrypoints=websecure
+      - traefik.http.routers.ghostfolio.tls=true
+      - traefik.http.services.ghostfolio.loadbalancer.server.port=3333
+    networks:
+      - proxy
+      - ghostfolio
     restart: unless-stopped
 
   immich-server:
@@ -411,9 +521,11 @@ services:
       - immich-redis
       - immich-postgres
     labels:
+      - traefik.docker.network=home-server_proxy
       - traefik.enable=true
       - traefik.http.routers.immich.rule=Host(`photos.${DOMAIN}`)
-      - traefik.http.routers.immich.entrypoints=web
+      - traefik.http.routers.immich.entrypoints=websecure
+      - traefik.http.routers.immich.tls=true
       - traefik.http.services.immich.loadbalancer.server.port=2283
     networks:
       - proxy
@@ -467,7 +579,8 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.homeassistant.rule=Host(`ha.${DOMAIN}`)
-      - traefik.http.routers.homeassistant.entrypoints=web
+      - traefik.http.routers.homeassistant.entrypoints=websecure
+      - traefik.http.routers.homeassistant.tls=true
       - traefik.http.services.homeassistant.loadbalancer.server.port=8123
     networks:
       - proxy
@@ -479,4 +592,6 @@ networks:
   immich:
     driver: bridge
   romm:
+    driver: bridge
+  ghostfolio:
     driver: bridge

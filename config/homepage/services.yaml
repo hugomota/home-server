@@ -1,54 +1,118 @@
-- Media:
-    - Jellyfin:
-        href: http://localhost:8096
-        description: Stream movies and TV
-        icon: jellyfin.png
-        container: jellyfin
-    - RomM:
-        href: http://localhost:8086
-        description: Manage your own ROM library
-        icon: mdi-controller-classic
-        container: romm
-    - Jellyseerr:
-        href: http://localhost:5055
-        description: Request movies and shows
-        icon: jellyseerr.png
-        container: jellyseerr
-- Admin:
+- Dashboard:
+    - Homepage:
+        href: https://home.local.server
+        description: Main dashboard
+        icon: homepage.png
+        container: homepage
+    - Traefik:
+        href: https://traefik.local.server
+        description: Reverse proxy and routing
+        icon: traefik.png
+        container: traefik
     - Portainer:
-        href: http://localhost:9000
+        href: https://portainer.local.server
         description: Docker admin
         icon: portainer.png
         container: portainer
     - Uptime Kuma:
-        href: http://localhost:3001
+        href: https://status.local.server
         description: Health checks
         icon: uptime-kuma.png
         container: uptime-kuma
-    - Home Assistant:
-        href: http://localhost:8123
-        description: Smart home control
-        icon: home-assistant.png
-        container: homeassistant
-- Photos:
-    - Immich:
-        href: http://localhost:2283
-        description: Photo and image manager
-        icon: immich.png
-        container: immich-server
-- Tools:
-    - qBittorrent:
-        href: http://localhost:8081
-        description: Torrent downloads
-        icon: qbittorrent.png
-        container: qbittorrent
+
+- Media:
+    - Jellyfin:
+        href: https://jellyfin.local.server
+        description: Stream movies and TV
+        icon: jellyfin.png
+        container: jellyfin
+    - Jellyseerr:
+        href: https://request.local.server
+        description: Request movies and shows
+        icon: jellyseerr.png
+        container: jellyseerr
+    - Sonarr:
+        href: https://sonarr.local.server
+        description: TV automation
+        icon: sonarr.png
+        container: sonarr
+    - Radarr:
+        href: https://radarr.local.server
+        description: Movie automation
+        icon: radarr.png
+        container: radarr
+    - Prowlarr:
+        href: https://indexers.local.server
+        description: Indexer management
+        icon: prowlarr.png
+        container: prowlarr
     - Bazarr:
-        href: http://localhost:6767
+        href: https://subtitles.local.server
         description: Subtitle automation
         icon: bazarr.png
         container: bazarr
+    - qBittorrent:
+        href: https://torrent.local.server
+        description: Torrent downloads
+        icon: qbittorrent.png
+        container: qbittorrent
+
+- Gaming:
     - EmulatorJS:
-        href: http://localhost:8085
+        href: https://arcade.local.server
         description: Retro games for the TV browser
         icon: emulatorjs.png
         container: emulatorjs
+    - RomM:
+        href: https://roms.local.server
+        description: Manage your own ROM library
+        icon: mdi-controller-classic
+        container: romm
+
+- Smart Home:
+    - Home Assistant:
+        href: https://ha.local.server
+        description: Smart home control
+        icon: home-assistant.png
+        container: homeassistant
+
+- Photos:
+    - Immich:
+        href: https://photos.local.server
+        description: Photo and image manager
+        icon: immich.png
+        container: immich-server
+    - File Browser:
+        href: https://files.local.server
+        description: Browse media, photos, and downloads
+        icon: filebrowser.png
+        container: filebrowser
+
+- Finance:
+    - Actual Budget:
+        href: https://budget.local.server
+        description: Budgeting and envelope planning
+        icon: actual-budget.png
+        container: actual-budget
+    - Ghostfolio:
+        href: https://investments.local.server
+        description: Investments and net worth tracking
+        icon: mdi-chart-line
+        container: ghostfolio
+
+- AI & Search:
+    - Ollama:
+        href: https://ollama.local.server
+        description: Local LLM runtime and model API
+        icon: si-ollama
+        container: ollama
+    - Open WebUI:
+        href: https://openwebui.local.server
+        description: Local AI interface
+        icon: open-webui.png
+        container: open-webui
+    - SearXNG:
+        href: https://search.local.server
+        description: Metasearch backend
+        icon: searxng.png
+        container: searxng

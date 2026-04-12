@@ -3,15 +3,24 @@ theme: dark
 color: slate
 headerStyle: boxed
 layout:
+  Dashboard:
+    style: row
+    columns: 4
   Media:
     style: row
     columns: 3
-  Admin:
+  Gaming:
+    style: row
+    columns: 3
+  Smart Home:
+    style: row
+    columns: 3
+  Finance:
     style: row
     columns: 3
   Photos:
     style: row
     columns: 3
-  Tools:
+  AI & Search:
     style: row
     columns: 3
