@@ -365,143 +365,6 @@ services:
       - proxy
     restart: unless-stopped
 
-  emulatorjs:
-    image: lscr.io/linuxserver/emulatorjs:1.9.2-ls173
-    container_name: emulatorjs
-    environment:
-      <<: *common-env
-      SUBFOLDER: /
-    ports:
-      - "3003:3000"
-      - "8085:80"
-      - "4001:4001"
-    volumes:
-      - ${CONFIG_ROOT}/emulatorjs:/config
-      - ${DATA_ROOT}/emulatorjs:/data
-      - ${ROMS_LIBRARY_ROOT}:/data/roms
-      - ${ROMS_BIOS_ROOT}:/data/bios
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.emulatorjs.rule=Host(`arcade.${DOMAIN}`)
-      - traefik.http.routers.emulatorjs.entrypoints=websecure
-      - traefik.http.routers.emulatorjs.tls=true
-      - traefik.http.services.emulatorjs.loadbalancer.server.port=80
-    networks:
-      - proxy
-    restart: unless-stopped
-
-  romm-db:
-    image: mariadb:latest
-    container_name: romm-db
-    environment:
-      MARIADB_ROOT_PASSWORD: ${ROMM_DB_ROOT_PASSWORD:-change-me}
-      MARIADB_DATABASE: ${ROMM_DB_NAME:-romm}
-      MARIADB_USER: ${ROMM_DB_USER:-romm}
-      MARIADB_PASSWORD: ${ROMM_DB_PASSWORD:-change-me}
-      TZ: ${TZ:-Europe/Lisbon}
-    volumes:
-      - ${DATA_ROOT}/romm/db:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
-    networks:
-      - romm
-    restart: unless-stopped
-
-  romm:
-    image: rommapp/romm:latest
-    container_name: romm
-    depends_on:
-      romm-db:
-        condition: service_healthy
-    environment:
-      TZ: ${TZ:-Europe/Lisbon}
-      ROMM_AUTH_SECRET_KEY: ${ROMM_AUTH_SECRET_KEY:-change-me}
-      DB_HOST: romm-db
-      DB_NAME: ${ROMM_DB_NAME:-romm}
-      DB_USER: ${ROMM_DB_USER:-romm}
-      DB_PASSWD: ${ROMM_DB_PASSWORD:-change-me}
-      ROMM_BASE_URL: https://roms.${DOMAIN}
-    ports:
-      - "8086:8080"
-    volumes:
-      - ${ROMS_LIBRARY_ROOT}:/romm/library
-      - ${DATA_ROOT}/romm/assets:/romm/assets
-      - ${DATA_ROOT}/romm/resources:/romm/resources
-      - ${CONFIG_ROOT}/romm:/romm/config
-      - ${DATA_ROOT}/romm/redis-data:/redis-data
-    labels:
-      - traefik.docker.network=home-server_proxy
-      - traefik.enable=true
-      - traefik.http.routers.romm.rule=Host(`roms.${DOMAIN}`)
-      - traefik.http.routers.romm.entrypoints=websecure
-      - traefik.http.routers.romm.tls=true
-      - traefik.http.services.romm.loadbalancer.server.port=8080
-    networks:
-      - proxy
-      - romm
-    restart: unless-stopped
-
-  ghostfolio-postgres:
-    image: postgres:16-alpine
-    container_name: ghostfolio-postgres
-    environment:
-      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}
-      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}
-      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}
-      TZ: ${TZ:-Europe/Lisbon}
-    volumes:
-      - ${DATA_ROOT}/ghostfolio/postgres:/var/lib/postgresql/data
-    networks:
-      - ghostfolio
-    restart: unless-stopped
-
-  ghostfolio-redis:
-    image: redis:7-alpine
-    container_name: ghostfolio-redis
-    command: redis-server --save 60 1 --loglevel warning --requirepass ${GHOSTFOLIO_REDIS_PASSWORD:-ghostfolio-redis-pass}
-    volumes:
-      - ${DATA_ROOT}/ghostfolio/redis:/data
-    networks:
-      - ghostfolio
-    restart: unless-stopped
-
-  ghostfolio:
-    image: ghostfolio/ghostfolio:latest
-    container_name: ghostfolio
-    depends_on:
-      - ghostfolio-postgres
-      - ghostfolio-redis
-    environment:
-      ACCESS_TOKEN_SALT: ${GHOSTFOLIO_ACCESS_TOKEN_SALT}
-      DATABASE_URL: postgresql://${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}:${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}@ghostfolio-postgres:5432/${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}?sslmode=prefer
-      JWT_SECRET_KEY: ${GHOSTFOLIO_JWT_SECRET_KEY}
-      PORT: 3333
-      ROOT_URL: ${GHOSTFOLIO_ROOT_URL:-http://localhost:3333}
-      POSTGRES_DB: ${GHOSTFOLIO_POSTGRES_DB:-ghostfolio}
-      POSTGRES_USER: ${GHOSTFOLIO_POSTGRES_USER:-ghostfolio}
-      POSTGRES_PASSWORD: ${GHOSTFOLIO_POSTGRES_PASSWORD:-ghostfolio-pass}
-      REDIS_HOST: ghostfolio-redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${GHOSTFOLIO_REDIS_PASSWORD:-ghostfolio-redis-pass}
-      TZ: ${TZ:-Europe/Lisbon}
-    ports:
-      - "3333:3333"
-    labels:
-      - traefik.docker.network=home-server_proxy
-      - traefik.enable=true
-      - traefik.http.routers.ghostfolio.rule=Host(`investments.${DOMAIN}`)
-      - traefik.http.routers.ghostfolio.entrypoints=websecure
-      - traefik.http.routers.ghostfolio.tls=true
-      - traefik.http.services.ghostfolio.loadbalancer.server.port=3333
-    networks:
-      - proxy
-      - ghostfolio
-    restart: unless-stopped
-
   immich-server:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     container_name: immich-server
@@ -567,6 +430,26 @@ services:
       - immich
     restart: unless-stopped
 
+  icloudpd:
+    image: icloudpd/icloudpd:latest
+    container_name: icloudpd
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+    command:
+      - icloudpd
+      - --directory
+      - /data
+      - --username
+      - ${ICLOUDPD_USERNAME:-your-apple-id@example.com}
+      - --cookie-directory
+      - /config
+      - --watch-with-interval
+      - ${ICLOUDPD_INTERVAL:-3600}
+    volumes:
+      - ${CONFIG_ROOT}/icloudpd:/config
+      - ${PHOTOS_ROOT}/icloud:/data
+    restart: unless-stopped
+
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
     container_name: homeassistant
@@ -590,8 +473,4 @@ networks:
   proxy:
     driver: bridge
   immich:
-    driver: bridge
-  romm:
-    driver: bridge
-  ghostfolio:
     driver: bridge

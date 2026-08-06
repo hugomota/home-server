@@ -5,10 +5,8 @@ This project ships a broader Docker Compose setup for a real home server:
 - Media streaming with Jellyfin
 - Movie/TV automation with Radarr, Sonarr, Prowlarr, Bazarr, and Jellyseerr
 - Torrents with qBittorrent
-- Arcade gaming in the browser with EmulatorJS and RomM
-- Photo hosting and image management with Immich
+- Photo hosting with Immich and iCloud photo downloads with iCloudPD
 - Budgeting with Actual Budget
-- Investment tracking with Ghostfolio
 - Admin and dashboard tools with Portainer, Homepage, File Browser, and Uptime Kuma
 - Smart home control with Home Assistant
 - Existing extras kept in place: Traefik, Ollama, Open WebUI, and SearXNG
@@ -23,7 +21,6 @@ This project ships a broader Docker Compose setup for a real home server:
 | File Browser | 8082 | `https://files.<your-domain>` or `http://localhost:8082` | Browse media/download folders |
 | Traefik | 80, 443, 8088 | `https://traefik.<your-domain>` | Reverse proxy and dashboard |
 | Actual Budget | 5006 | `https://budget.<your-domain>` or `http://localhost:5006` | Budgeting |
-| Ghostfolio | 3333 | `https://investments.<your-domain>` or `http://localhost:3333` | Investment tracking |
 | Ollama | 11434 | `https://ollama.<your-domain>` or `http://localhost:11434` | Local LLM runtime and model API |
 | Open WebUI | proxied | `https://openwebui.<your-domain>` | Local AI UI |
 | SearXNG | 8080 | `http://localhost:8080` | Metasearch backend |
@@ -34,9 +31,8 @@ This project ships a broader Docker Compose setup for a real home server:
 | Sonarr | 8989 | `https://sonarr.<your-domain>` or `http://localhost:8989` | TV automation |
 | Radarr | 7878 | `https://radarr.<your-domain>` or `http://localhost:7878` | Movie automation |
 | Bazarr | 6767 | `https://subtitles.<your-domain>` or `http://localhost:6767` | Subtitle automation |
-| EmulatorJS | 8085, 3003, 4001 | `https://arcade.<your-domain>` or `http://localhost:8085` | Browser-based retro arcade for your TV |
-| RomM | 8086 | `https://roms.<your-domain>` or `http://localhost:8086` | Manage your own ROM collection |
 | Immich | 2283 | `https://photos.<your-domain>` or `http://localhost:2283` | Photo and image manager |
+| iCloudPD | none | Background service | Download iCloud photos into `photos/icloud` |
 | Home Assistant | 8123 | `https://ha.<your-domain>` or `http://localhost:8123` | Smart home hub |
 
 ## Folder Layout
@@ -52,29 +48,14 @@ media/movies/
 media/tv/
 photos/
 photos/library/
-data/roms/library/
-data/roms/library/roms/
-data/roms/library/bios/
-```
-
-Useful game-library paths:
-
-```text
-data/emulatorjs/
-data/emulatorjs/bios/
-data/roms/library/
-data/roms/library/README.txt
-data/roms/library/roms/nes/
-data/roms/library/roms/snes/
-data/roms/library/roms/n64/
-data/roms/library/roms/gba/
-data/roms/library/bios/psx/
+photos/icloud/
+config/icloudpd/
 ```
 
 ## Quick Start
 
 1. Copy [.env.example](/Users/mothug01/Projects/home-server/.env.example) to `.env`.
-2. Set `PUID`, `PGID`, `TZ`, `DOMAIN`, `DB_PASSWORD`, `ROMM_DB_PASSWORD`, `ROMM_DB_ROOT_PASSWORD`, `ROMM_AUTH_SECRET_KEY`, and the `GHOSTFOLIO_*` secrets.
+2. Set `PUID`, `PGID`, `TZ`, `DOMAIN`, `DB_PASSWORD`, and `ICLOUDPD_USERNAME`.
 3. Start the stack:
 
 ```bash
@@ -99,7 +80,7 @@ mkcert -cert-file local-server.crt -key-file local-server.key local.server '*.lo
 Local hostname setup on macOS/Linux:
 
 ```bash
-echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server status.local.server files.local.server budget.local.server investments.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server arcade.local.server roms.local.server ha.local.server' | sudo tee -a /etc/hosts
+echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server status.local.server files.local.server budget.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server ha.local.server' | sudo tee -a /etc/hosts
 ```
 
 Once those are in place, the HTTPS routes should resolve locally without the usual browser certificate warning on this machine.
@@ -115,33 +96,33 @@ Once those are in place, the HTTPS routes should resolve locally without the usu
 7. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
 8. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
 9. Open Actual Budget on `http://<server-ip>:5006` and complete its first-run setup.
-10. Open Ghostfolio on `http://<server-ip>:3333` and create the first admin user.
-11. In Immich, create the first admin user and start uploading photos.
-12. Open RomM on `http://<server-ip>:8086` and use the shared library mounted at `/romm/library`.
-13. Put your own ROMs into `data/roms/library/roms/<platform>/`.
-14. EmulatorJS reads the same shared ROM library and serves it to your TV browser on `http://<server-ip>:8085`.
-15. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
-16. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
-17. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
+10. In Immich, create the first admin user and start uploading photos.
+11. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
+12. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
+13. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
+14. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
+15. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
 
-## TV Gaming
+## iCloud Photos Downloader
 
-For a Mario-style retro setup, start with these folders:
+iCloudPD runs in the background, checks iCloud at the interval configured by `ICLOUDPD_INTERVAL`, and stores downloads under `photos/icloud`. It deliberately does not mirror deletions from iCloud.
 
-- `data/roms/library/roms/nes/`
-- `data/roms/library/roms/snes/`
-- `data/roms/library/roms/n64/`
-- `data/roms/library/roms/gba/`
-- `data/roms/library/roms/gb/`
-- `data/roms/library/roms/gbc/`
+Before starting the background service for the first time, authenticate interactively:
 
-If a console needs BIOS files, place them under `data/roms/library/bios/<platform>/`.
+```bash
+docker compose run --rm icloudpd icloudpd \
+  --directory /data \
+  --username "$(sed -n 's/^ICLOUDPD_USERNAME=//p' .env)" \
+  --cookie-directory /config
+```
 
-Recommended flow:
+Follow the Apple sign-in and two-factor authentication prompts, then start the service:
 
-1. Manage the library in RomM at `http://<server-ip>:8086`
-2. Open EmulatorJS at `http://<server-ip>:8085`
-3. Use a Bluetooth or USB controller paired to the TV/browser device
+```bash
+docker compose up -d icloudpd
+```
+
+Apple periodically requires two-factor reauthentication. Run the interactive command again when the iCloudPD logs report an expired session.
 
 ## Traefik Hostnames
 
@@ -153,7 +134,6 @@ If `DOMAIN=local.server`, these URLs will work once local DNS or host entries ar
 - `https://status.local.server`
 - `https://files.local.server`
 - `https://budget.local.server`
-- `https://investments.local.server`
 - `https://ollama.local.server`
 - `https://openwebui.local.server`
 - `https://jellyfin.local.server`
@@ -164,8 +144,6 @@ If `DOMAIN=local.server`, these URLs will work once local DNS or host entries ar
 - `https://radarr.local.server`
 - `https://subtitles.local.server`
 - `https://photos.local.server`
-- `https://arcade.local.server`
-- `https://roms.local.server`
 - `https://ha.local.server`
 
 You can also use the direct host ports listed above without Traefik.
@@ -188,8 +166,6 @@ For the Traefik UI specifically:
 - The Traefik certificate is generated with `mkcert`, which removes browser trust warnings on devices where the mkcert local CA has been installed.
 - Portainer may disable its first-run page if you leave it idle too long before creating the admin user. If that happens, restart just the Portainer service and open it again right away.
 - Sonarr is pinned to `4.0.15.2941-ls295` instead of `latest` because the newer image stream triggered a broken authorization pipeline in this stack.
-- Ghostfolio is portfolio-focused, so it complements a budgeting app rather than replacing it one-for-one.
 - qBittorrent is included without a VPN container so the setup stays simple. If you want, we can add Gluetun later.
 - Immich is one of the heavier services in the stack. Give the host enough RAM before enabling everything together.
-- I can help you manage and serve ROMs you legally own, but I can’t set up a service to download copyrighted game files.
 - I could not complete a Moneypile install because the public image reference currently advertised on its website did not resolve when pulled from Docker. If they publish a working public image or repo, I can swap it in quickly.
