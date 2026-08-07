@@ -379,6 +379,7 @@ services:
       - "2283:2283"
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
+      - ${PHOTOS_ROOT}/icloud:/mnt/icloud-sync-hugo:ro
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich-redis
@@ -417,13 +418,15 @@ services:
     restart: unless-stopped
 
   immich-postgres:
-    image: tensorchord/pgvecto-rs:pg14-v0.2.0
+    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     container_name: immich-postgres
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-immichpass}
       POSTGRES_DB: ${DB_DATABASE_NAME:-immich}
+      POSTGRES_INITDB_ARGS: "--data-checksums"
       TZ: ${TZ:-Europe/Lisbon}
+    shm_size: 128mb
     volumes:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     networks:
