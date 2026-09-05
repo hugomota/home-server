@@ -22,7 +22,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "8088:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${CONFIG_ROOT}/traefik/dynamic:/etc/traefik/dynamic:ro
@@ -45,8 +44,7 @@ services:
       HOMEPAGE_ALLOWED_HOSTS: "*"
       PUID: "0"
       PGID: "0"
-    ports:
-      - "3000:3000"
+
     volumes:
       - ${CONFIG_ROOT}/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -64,9 +62,7 @@ services:
     image: portainer/portainer-ce:latest
     container_name: portainer
     command: -H unix:///var/run/docker.sock
-    ports:
-      - "9000:9000"
-      - "9443:9443"
+
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_ROOT}/portainer:/data
@@ -83,8 +79,7 @@ services:
   uptime-kuma:
     image: louislam/uptime-kuma:1
     container_name: uptime-kuma
-    ports:
-      - "3001:3001"
+
     volumes:
       - ${DATA_ROOT}/uptime-kuma:/app/data
     labels:
@@ -101,8 +96,7 @@ services:
     image: filebrowser/filebrowser:latest
     container_name: filebrowser
     user: "${PUID:-1000}:${PGID:-1000}"
-    ports:
-      - "8082:80"
+
     volumes:
       - ${CONFIG_ROOT}/filebrowser:/config
       - ${MEDIA_ROOT}:/srv/media
@@ -129,8 +123,7 @@ services:
     container_name: actual-budget
     environment:
       <<: *common-env
-    ports:
-      - "5006:5006"
+
     volumes:
       - ${DATA_ROOT}/actual-budget:/data
     labels:
@@ -146,15 +139,18 @@ services:
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     container_name: open-webui
-    depends_on:
-      - ollama
     environment:
+      ENABLE_OLLAMA_API: "false"
       ENABLE_RAG_WEB_SEARCH: "True"
-      OLLAMA_BASE_URL: http://ollama:11434
+      OPENAI_API_BASE_URLS: "http://host.docker.internal:8650/v1;http://host.docker.internal:8651/v1;http://host.docker.internal:8652/v1"
+      OPENAI_API_KEYS: "${HERMES_DEFAULT_API_KEY};${HERMES_HOME_SERVER_MANAGER_API_KEY};${HERMES_WEBDEV_API_KEY}"
       RAG_WEB_SEARCH_ENGINE: searxng
       RAG_WEB_SEARCH_RESULT_COUNT: "3"
       RAG_WEB_SEARCH_CONCURRENT_REQUESTS: "10"
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
     volumes:
       - ${DATA_ROOT}/open-webui:/app/backend/data
     labels:
@@ -170,8 +166,7 @@ services:
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
-    ports:
-      - "11434:11434"
+
     extra_hosts:
       - "registry.ollama.ai:104.21.75.227"
     volumes:
@@ -189,8 +184,7 @@ services:
   searxng:
     image: searxng/searxng:latest
     container_name: searxng
-    ports:
-      - "8080:8080"
+
     volumes:
       - ./searxng:/etc/searxng:rw
     env_file:
@@ -222,9 +216,7 @@ services:
     container_name: jellyfin
     environment:
       <<: *common-env
-    ports:
-      - "8096:8096"
-      - "8920:8920"
+
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
       - ${MEDIA_ROOT}:/media
@@ -245,8 +237,7 @@ services:
     environment:
       LOG_LEVEL: info
       TZ: ${TZ:-Europe/Lisbon}
-    ports:
-      - "5055:5055"
+
     volumes:
       - ${CONFIG_ROOT}/jellyseerr:/app/config
     labels:
@@ -267,7 +258,6 @@ services:
       WEBUI_PORT: 8081
       TORRENTING_PORT: 6881
     ports:
-      - "8081:8081"
       - "6881:6881"
       - "6881:6881/udp"
     volumes:
@@ -288,8 +278,7 @@ services:
     container_name: prowlarr
     environment:
       <<: *common-env
-    ports:
-      - "9696:9696"
+
     volumes:
       - ${CONFIG_ROOT}/prowlarr:/config
     labels:
@@ -307,8 +296,7 @@ services:
     container_name: sonarr
     environment:
       <<: *common-env
-    ports:
-      - "8989:8989"
+
     volumes:
       - ${CONFIG_ROOT}/sonarr:/config
       - ${MEDIA_ROOT}/tv:/tv
@@ -328,8 +316,7 @@ services:
     container_name: radarr
     environment:
       <<: *common-env
-    ports:
-      - "7878:7878"
+
     volumes:
       - ${CONFIG_ROOT}/radarr:/config
       - ${MEDIA_ROOT}/movies:/movies
@@ -349,8 +336,7 @@ services:
     container_name: bazarr
     environment:
       <<: *common-env
-    ports:
-      - "6767:6767"
+
     volumes:
       - ${CONFIG_ROOT}/bazarr:/config
       - ${MEDIA_ROOT}/movies:/movies
@@ -375,8 +361,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-immichpass}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME:-immich}
       REDIS_HOSTNAME: immich-redis
-    ports:
-      - "2283:2283"
+
     volumes:
       - ${UPLOAD_LOCATION}:/usr/src/app/upload
       - ${PHOTOS_ROOT}/icloud:/mnt/icloud-sync-hugo:ro
@@ -458,8 +443,7 @@ services:
     container_name: homeassistant
     environment:
       TZ: ${TZ:-Europe/Lisbon}
-    ports:
-      - "8123:8123"
+
     volumes:
       - ${CONFIG_ROOT}/homeassistant:/config
     labels:

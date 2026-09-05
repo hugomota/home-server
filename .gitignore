@@ -30,8 +30,11 @@ config/*
 !config/homepage/settings.yaml
 !config/homepage/widgets.yaml
 
-# Ignore media and downloads
+# Ignore media, photo libraries, backups, and downloads
 media/
+photos/icloud/
+photos/library/
+backups/
 downloads/
 
 # Ignore Let's Encrypt certificates
