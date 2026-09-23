@@ -57,13 +57,6 @@
         icon: qbittorrent.png
         container: qbittorrent
 
-- Smart Home:
-    - Home Assistant:
-        href: https://ha.local.server
-        description: Smart home control
-        icon: home-assistant.png
-        container: homeassistant
-
 - Photos:
     - Immich:
         href: https://photos.local.server

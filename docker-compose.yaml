@@ -219,7 +219,8 @@ services:
 
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
-      - ${MEDIA_ROOT}:/media
+      - "/Volumes/Data/Media/Movies:/media/movies"
+      - "/Volumes/Data/Media/Tv Shows:/media/tv"
       - ${DATA_ROOT}/jellyfin-cache:/cache
     labels:
       - traefik.enable=true
@@ -449,24 +450,6 @@ services:
     volumes:
       - ${CONFIG_ROOT}/icloudpd:/config
       - ${PHOTOS_ROOT}/icloud:/data
-    restart: unless-stopped
-
-  homeassistant:
-    image: ghcr.io/home-assistant/home-assistant:stable
-    container_name: homeassistant
-    environment:
-      TZ: ${TZ:-Europe/Lisbon}
-
-    volumes:
-      - ${CONFIG_ROOT}/homeassistant:/config
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.homeassistant.rule=Host(`ha.${DOMAIN}`)
-      - traefik.http.routers.homeassistant.entrypoints=websecure
-      - traefik.http.routers.homeassistant.tls=true
-      - traefik.http.services.homeassistant.loadbalancer.server.port=8123
-    networks:
-      - proxy
     restart: unless-stopped
 
 networks:

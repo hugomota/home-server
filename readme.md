@@ -8,7 +8,6 @@ This project ships a broader Docker Compose setup for a real home server:
 - Photo hosting with Immich and iCloud photo downloads with iCloudPD
 - Budgeting with Actual Budget
 - Admin and dashboard tools with Portainer, Homepage, File Browser, and Uptime Kuma
-- Smart home control with Home Assistant
 - Existing extras kept in place: Traefik, Ollama, Open WebUI, and SearXNG
 
 ## Included Services
@@ -33,7 +32,6 @@ This project ships a broader Docker Compose setup for a real home server:
 | Bazarr | 6767 | `https://subtitles.<your-domain>` or `http://localhost:6767` | Subtitle automation |
 | Immich | 2283 | `https://photos.<your-domain>` or `http://localhost:2283` | Photo and image manager |
 | iCloudPD | none | Background service | Download iCloud photos into `photos/icloud` |
-| Home Assistant | 8123 | `https://ha.<your-domain>` or `http://localhost:8123` | Smart home hub |
 
 ## Folder Layout
 
@@ -80,7 +78,7 @@ mkcert -cert-file local-server.crt -key-file local-server.key local.server '*.lo
 Local hostname setup on macOS/Linux:
 
 ```bash
-echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server status.local.server files.local.server budget.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server ha.local.server' | sudo tee -a /etc/hosts
+echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server status.local.server files.local.server budget.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server' | sudo tee -a /etc/hosts
 ```
 
 Once those are in place, the HTTPS routes should resolve locally without the usual browser certificate warning on this machine.
@@ -144,7 +142,6 @@ If `DOMAIN=local.server`, these URLs will work once local DNS or host entries ar
 - `https://radarr.local.server`
 - `https://subtitles.local.server`
 - `https://photos.local.server`
-- `https://ha.local.server`
 
 You can also use the direct host ports listed above without Traefik.
 
@@ -159,7 +156,6 @@ For the Traefik UI specifically:
 
 ## Notes
 
-- Home Assistant now publishes `8123` directly, which works better on Docker Desktop and non-Linux hosts. USB radios and LAN discovery are still better on a real Linux machine.
 - The secure `https://<service>.<your-domain>` hostnames work directly through Traefik right now without an extra SSO layer.
 - Open WebUI is configured to talk to the local Ollama service at `http://ollama:11434`, so any model that Ollama supports can be used there after you pull it.
 - `/etc/hosts` does not support wildcard entries, so each `*.local.server` hostname must be listed explicitly unless you run your own local DNS.
