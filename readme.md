@@ -122,6 +122,42 @@ docker compose up -d icloudpd
 
 Apple periodically requires two-factor reauthentication. Run the interactive command again when the iCloudPD logs report an expired session.
 
+## Photo Backup to AWS S3 Glacier
+
+`scripts/photos-glacier-backup.sh` does an incremental cold-storage backup of `photos/icloud` and Immich's original assets (`photos/library/library`, `photos/library/upload` — thumbnails and transcodes are skipped since they're regenerable). It tracks what's already been backed up in `backups/photos-glacier/manifest.txt`, so each run only zips and uploads files it hasn't seen before. Nothing is marked as done until the S3 upload succeeds, so a failed run is safe to retry.
+
+Setup:
+
+1. Create an S3 bucket for backups (any region close to you).
+2. Create an IAM user with a policy scoped to just that bucket, e.g.:
+
+   ```json
+   {
+     "Version": "2012-10-17",
+     "Statement": [
+       {
+         "Effect": "Allow",
+         "Action": ["s3:PutObject", "s3:ListBucket"],
+         "Resource": [
+           "arn:aws:s3:::your-glacier-backup-bucket",
+           "arn:aws:s3:::your-glacier-backup-bucket/*"
+         ]
+       }
+     ]
+   }
+   ```
+
+3. Set `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, and `AWS_S3_BUCKET` in `.env`. `GLACIER_STORAGE_CLASS` defaults to `DEEP_ARCHIVE` (cheapest, slow to restore); use `GLACIER` for faster restores at a bit more cost.
+4. Install the AWS CLI and `zip` on the host running cron (not inside a container).
+5. Run it once by hand to confirm it works: `./scripts/photos-glacier-backup.sh`
+6. Schedule it quarterly with cron (`crontab -e` on the host):
+
+   ```cron
+   0 3 1 1,4,7,10 * cd /path/to/home-server && ./scripts/photos-glacier-backup.sh >> backups/photos-glacier/cron.log 2>&1
+   ```
+
+No extra Docker service is needed — the script and a host cron entry are enough.
+
 ## Traefik Hostnames
 
 If `DOMAIN=local.server`, these URLs will work once local DNS or host entries are set:
