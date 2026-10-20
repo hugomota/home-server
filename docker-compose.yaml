@@ -143,6 +143,9 @@ services:
       <<: *common-env
     ports:
       - "8096:8096"
+    # Intel HD 4000 (Ivy Bridge) for VAAPI transcoding: H.264 only, no HEVC.
+    devices:
+      - /dev/dri:/dev/dri
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
       - ${MEDIA_ROOT}/movies:/media/movies
