@@ -60,9 +60,17 @@ docker compose up -d
    | `media` | Jellyseerr, qBittorrent, FlareSolverr, Prowlarr, Sonarr, Radarr, Bazarr |
    | `ai` | Ollama, Open WebUI, SearXNG |
 
+   Use the shortcuts (from the laptop: `ssh homeserver media-on`):
+
    ```bash
-   docker compose --profile media up -d      # start a group
-   docker compose --profile media stop       # stop it again
+   media-on     media-off
+   ai-on        ai-off
+   ```
+
+   They run `scripts/profile-ctl.sh`, linked into `/usr/local/bin`. Don't use `docker compose --profile media stop`: it stops the core services too. The script stops only the services in the profile. To create the links on a fresh install:
+
+   ```bash
+   for n in media-on media-off ai-on ai-off; do sudo ln -sfn "$PWD/scripts/profile-ctl.sh" /usr/local/bin/$n; done
    ```
 
    Running services come back after a reboot (`restart: unless-stopped`); stopped ones stay stopped.
