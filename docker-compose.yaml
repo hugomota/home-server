@@ -63,17 +63,17 @@ services:
     container_name: open-webui
     profiles: [ai]
     environment:
-      ENABLE_OLLAMA_API: "false"
+      # Local models from the ollama service.
+      ENABLE_OLLAMA_API: "true"
+      OLLAMA_BASE_URL: http://ollama:11434
+      # Claude through Anthropic's OpenAI-compatible endpoint (paid API key).
+      OPENAI_API_BASE_URLS: https://api.anthropic.com/v1
+      OPENAI_API_KEYS: ${ANTHROPIC_API_KEY:-}
       ENABLE_RAG_WEB_SEARCH: "True"
-      OPENAI_API_BASE_URLS: "http://host.docker.internal:8650/v1;http://host.docker.internal:8651/v1;http://host.docker.internal:8652/v1"
-      OPENAI_API_KEYS: "${HERMES_DEFAULT_API_KEY};${HERMES_HOME_SERVER_MANAGER_API_KEY};${HERMES_WEBDEV_API_KEY}"
       RAG_WEB_SEARCH_ENGINE: searxng
       RAG_WEB_SEARCH_RESULT_COUNT: "3"
       RAG_WEB_SEARCH_CONCURRENT_REQUESTS: "10"
       SEARXNG_QUERY_URL: http://searxng:8080/search?q=<query>
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
     volumes:
       - ${DATA_ROOT}/open-webui:/app/backend/data
     labels:

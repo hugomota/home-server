@@ -205,11 +205,22 @@ qBittorrent runs without a VPN.
 
 ## Local AI (`ai` profile)
 
-Open WebUI talks to OpenAI-compatible endpoints on the host
-(`host.docker.internal:8650-8652`, keys `HERMES_*_API_KEY` in `.env`) and to
-SearXNG for web search. Ollama runs local models
-(`docker compose exec -T ollama ollama pull llama3.2`). It is the heaviest
-group for 8 GB RAM: start it only when needed.
+Open WebUI offers two kinds of models, plus SearXNG for web search:
+
+- **Local models** from Ollama (`docker compose exec -T ollama ollama pull llama3.2`).
+  Free, private, but slow on this CPU and limited by 8 GB RAM.
+- **Claude** through Anthropic's OpenAI-compatible endpoint
+  (`https://api.anthropic.com/v1`), with `ANTHROPIC_API_KEY` in `.env`. The key
+  comes from the Claude Console and is billed per use, separately from a
+  Claude subscription. Use model ids such as `claude-opus-5-5`,
+  `claude-sonnet-5-5` or `claude-haiku-5-5`. The compatibility layer is meant
+  for testing: no prompt caching, no visible thinking, and Open WebUI must not
+  send `temperature`/`top_p` (current Claude models reject non-default values).
+
+Open WebUI stores these connection settings in its own database on first
+start; later changes are made in its Admin Settings > Connections.
+
+This is the heaviest group for 8 GB RAM: start it only when needed.
 
 ## Photo Backup to AWS S3 (Deep Archive)
 
