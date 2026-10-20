@@ -53,11 +53,11 @@ photos/icloud/
 docker compose up -d
 ```
 
-   This starts only the core services (Traefik, Homepage, Immich). The rest are grouped in profiles and start only when asked:
+   This starts only the core services (Traefik, Homepage, Immich, Jellyfin). The rest are grouped in profiles and start only when asked:
 
    | Profile | Services |
    |---|---|
-   | `media` | Jellyfin, Jellyseerr, qBittorrent, FlareSolverr, Prowlarr, Sonarr, Radarr, Bazarr |
+   | `media` | Jellyseerr, qBittorrent, FlareSolverr, Prowlarr, Sonarr, Radarr, Bazarr |
    | `ai` | Ollama, Open WebUI, SearXNG |
 
    ```bash
