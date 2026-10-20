@@ -29,19 +29,27 @@ This project ships a broader Docker Compose setup for a real home server:
 
 ## Folder Layout
 
-Create these folders before first boot if they do not exist yet:
+Small, fast data stays in the project folder on the SSD; big files live on the data disk (HDD) mounted at `/srv/data`:
 
 ```text
-config/
-data/
-downloads/
-media/
-media/movies/
-media/tv/
-photos/
-photos/library/
-photos/icloud/
+<project>/config/<app>/          app settings (SSD)
+<project>/data/immich/postgres/  Immich database (SSD)
+<project>/data/immich/thumbs/    Immich thumbnails (SSD)
+<project>/data/immich/model-cache/  Immich ML models (SSD)
+
+/srv/data/photos/                Immich UPLOAD_LOCATION (HDD)
+  library/<user>/YYYY/YYYY-MM-DD/   originals, sorted by the storage template
+  upload/                        uploads not sorted yet
+  encoded-video/                 transcoded videos (regenerable)
+  profile/                       profile pictures
+  backups/                       Immich's nightly database dumps
+  thumbs/                        empty; thumbnails are mounted from the SSD
+/srv/data/media/movies/          Jellyfin / Radarr
+/srv/data/media/tv/              Jellyfin / Sonarr
+/srv/data/downloads/             qBittorrent
 ```
+
+Never add, move or delete files inside `/srv/data/photos` by hand: Immich tracks every file in its database. The `.immich` files in each folder are Immich's mount markers; leave them.
 
 ## Quick Start
 
@@ -108,10 +116,9 @@ Once those are in place, the HTTPS routes should resolve locally without the usu
 6. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
 7. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
 8. In Immich, create the first admin user and start uploading photos.
-9. In Immich, add `photos/icloud` as an external library if you want the existing iCloud photos there to appear.
-10. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
-11. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
-12. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
+9. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
+10. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
+11. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
 
 ## Watching on a TV / Android Box
 
@@ -145,7 +152,7 @@ That is why Jellyfin is always on, while Jellyseerr sits in the `media` profile 
 
 ## Photo Backup to AWS S3 Glacier
 
-`scripts/photos-glacier-backup.sh` does an incremental cold-storage backup of `photos/icloud` and Immich's original assets (`photos/library/library`, `photos/library/upload` — thumbnails and transcodes are skipped since they're regenerable). It tracks what's already been backed up in `backups/photos-glacier/manifest.txt`, so each run only zips and uploads files it hasn't seen before. Nothing is marked as done until the S3 upload succeeds, so a failed run is safe to retry.
+`scripts/photos-glacier-backup.sh` does an incremental cold-storage backup of Immich's original assets (`library/` and `upload/` under `PHOTOS_ROOT`, i.e. `/srv/data/photos`; thumbnails, transcodes and database dumps are skipped). It tracks what's already been backed up in `backups/photos-glacier/manifest.txt`, so each run only zips and uploads files it hasn't seen before. Nothing is marked as done until the S3 upload succeeds, so a failed run is safe to retry.
 
 Setup:
 

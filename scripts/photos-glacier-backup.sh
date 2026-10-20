@@ -38,12 +38,13 @@ case "$PHOTOS_ROOT" in
   *) PHOTOS_ROOT="$REPO_ROOT/${PHOTOS_ROOT#./}" ;;
 esac
 
-# Source folders to back up, relative to PHOTOS_ROOT. Deliberately excludes
-# Immich's regenerable derivatives (thumbs/, encoded-video/, profile/).
+# Source folders to back up, relative to PHOTOS_ROOT (= Immich's
+# UPLOAD_LOCATION): originals sorted by the storage template, plus uploads
+# not sorted yet. Deliberately excludes Immich's regenerable derivatives
+# (thumbs/, encoded-video/, profile/) and its database dumps (backups/).
 SOURCE_DIRS=(
-  "icloud"
-  "library/library"
-  "library/upload"
+  "library"
+  "upload"
 )
 
 LOG_FILE="$BACKUP_STATE_DIR/backup.log"

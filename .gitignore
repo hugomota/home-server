@@ -32,8 +32,7 @@ config/*
 
 # Ignore media, photo libraries, backups, and downloads
 media/
-photos/icloud/
-photos/library/
+photos/
 backups/
 downloads/
 
