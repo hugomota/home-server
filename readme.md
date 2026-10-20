@@ -48,7 +48,7 @@ each computer that should use them (macOS: `sudo nano /etc/hosts`, then
 ```
 192.168.1.50  home.local.server traefik.local.server photos.local.server jellyfin.local.server
 192.168.1.50  request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server
-192.168.1.50  openwebui.local.server ollama.local.server search.local.server
+192.168.1.50  openwebui.local.server ollama.local.server search.local.server falaplay.local.server
 ```
 
 TVs, phones and Android boxes can't do this, so they use the direct
@@ -221,6 +221,40 @@ Open WebUI stores these connection settings in its own database on first
 start; later changes are made in its Admin Settings > Connections.
 
 This is the heaviest group for 8 GB RAM: start it only when needed.
+
+## Personal Projects: Self-hosted CI/CD
+
+Personal web projects (private GitHub repos) are deployed here by a
+**GitHub Actions self-hosted runner**. The runner opens an outbound
+connection to GitHub and waits for jobs, so no router ports, public IP or
+DNS are needed; if the server is off, jobs wait in GitHub's queue.
+
+Pattern per project:
+
+- Checks (format, types, tests) keep running on GitHub's hosted runners
+  (`runs-on: ubuntu-latest`), so they don't load the server.
+- A `deploy` job with `runs-on: self-hosted`, `needs: check`, only for
+  pushes to `main`, runs `docker compose up -d --build` from the repo's own
+  `docker-compose.yaml`, which joins the external `home-server_proxy`
+  network for Traefik and publishes a port for tablets/phones.
+
+Runner setup (one per repo; repo **Settings > Actions > Runners > New
+self-hosted runner** gives a one-hour registration token):
+
+```bash
+# runs as the dedicated github-runner user (nologin, in the docker group)
+sudo -u github-runner bash -c 'cd /opt/github-runner/<repo> && ./config.sh --unattended \
+  --url https://github.com/hugomota/<repo> --token <token> --name home-server --labels home-server --work _work'
+sudo bash -c 'cd /opt/github-runner/<repo> && ./svc.sh install github-runner && ./svc.sh start'
+```
+
+The `docker` group gives the runner root-level power over the host: use it
+**only with private repositories** (a public repo would let anyone's pull
+request run code here).
+
+| Project | Address | Port |
+|---|---|---|
+| fala-play | `http://192.168.1.50:8090` / `https://falaplay.local.server` | 8090 |
 
 ## Photo Backup to AWS S3 (Deep Archive)
 
