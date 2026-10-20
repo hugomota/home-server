@@ -5,7 +5,7 @@ This project ships a broader Docker Compose setup for a real home server:
 - Media streaming with Jellyfin
 - Movie/TV automation with Radarr, Sonarr, Prowlarr, Bazarr, and Jellyseerr
 - Torrents with qBittorrent
-- Photo hosting with Immich and iCloud photo downloads with iCloudPD
+- Photo hosting with Immich
 - Dashboard with Homepage
 - Existing extras kept in place: Traefik, Ollama, Open WebUI, and SearXNG
 
@@ -26,7 +26,6 @@ This project ships a broader Docker Compose setup for a real home server:
 | Radarr | 7878 | `https://radarr.<your-domain>` or `http://localhost:7878` | Movie automation |
 | Bazarr | 6767 | `https://subtitles.<your-domain>` or `http://localhost:6767` | Subtitle automation |
 | Immich | 2283 | `https://photos.<your-domain>` or `http://localhost:2283` | Photo and image manager |
-| iCloudPD | none | Background service | Download iCloud photos into `photos/icloud` |
 
 ## Folder Layout
 
@@ -42,20 +41,19 @@ media/tv/
 photos/
 photos/library/
 photos/icloud/
-config/icloudpd/
 ```
 
 ## Quick Start
 
 1. Copy [.env.example](/Users/mothug01/Projects/home-server/.env.example) to `.env`.
-2. Set `PUID`, `PGID`, `TZ`, `DOMAIN`, `DB_PASSWORD`, and `ICLOUDPD_USERNAME`.
+2. Set `PUID`, `PGID`, `TZ`, `DOMAIN`, and `DB_PASSWORD`.
 3. Start the stack:
 
 ```bash
 docker compose up -d
 ```
 
-   This starts only the core services (Traefik, Homepage, Immich, iCloudPD). The rest are grouped in profiles and start only when asked:
+   This starts only the core services (Traefik, Homepage, Immich). The rest are grouped in profiles and start only when asked:
 
    | Profile | Services |
    |---|---|
@@ -102,32 +100,10 @@ Once those are in place, the HTTPS routes should resolve locally without the usu
 6. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
 7. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
 8. In Immich, create the first admin user and start uploading photos.
-9. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
-10. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
-11. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
-12. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
-13. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
-
-## iCloud Photos Downloader
-
-iCloudPD runs in the background, checks iCloud at the interval configured by `ICLOUDPD_INTERVAL`, and stores downloads under `photos/icloud`. It deliberately does not mirror deletions from iCloud.
-
-Before starting the background service for the first time, authenticate interactively:
-
-```bash
-docker compose run --rm icloudpd icloudpd \
-  --directory /data \
-  --username "$(sed -n 's/^ICLOUDPD_USERNAME=//p' .env)" \
-  --cookie-directory /config
-```
-
-Follow the Apple sign-in and two-factor authentication prompts, then start the service:
-
-```bash
-docker compose up -d icloudpd
-```
-
-Apple periodically requires two-factor reauthentication. Run the interactive command again when the iCloudPD logs report an expired session.
+9. In Immich, add `photos/icloud` as an external library if you want the existing iCloud photos there to appear.
+10. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
+11. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
+12. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
 
 ## Photo Backup to AWS S3 Glacier
 

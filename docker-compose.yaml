@@ -365,26 +365,6 @@ services:
       - immich
     restart: unless-stopped
 
-  icloudpd:
-    image: icloudpd/icloudpd:latest
-    container_name: icloudpd
-    environment:
-      TZ: ${TZ:-Europe/Lisbon}
-    command:
-      - icloudpd
-      - --directory
-      - /data
-      - --username
-      - ${ICLOUDPD_USERNAME:-your-apple-id@example.com}
-      - --cookie-directory
-      - /config
-      - --watch-with-interval
-      - ${ICLOUDPD_INTERVAL:-3600}
-    volumes:
-      - ${CONFIG_ROOT}/icloudpd:/config
-      - ${PHOTOS_ROOT}/icloud:/data
-    restart: unless-stopped
-
 networks:
   proxy:
     driver: bridge
