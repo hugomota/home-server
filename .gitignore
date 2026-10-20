@@ -13,6 +13,8 @@ docker-compose.override.yaml
 *.pid
 
 # Ignore logs and temp files
+__pycache__/
+*.pyc
 logs/
 *.log
 *.swp
