@@ -6,8 +6,7 @@ This project ships a broader Docker Compose setup for a real home server:
 - Movie/TV automation with Radarr, Sonarr, Prowlarr, Bazarr, and Jellyseerr
 - Torrents with qBittorrent
 - Photo hosting with Immich and iCloud photo downloads with iCloudPD
-- Budgeting with Actual Budget
-- Admin and dashboard tools with Portainer, Homepage, File Browser, and Uptime Kuma
+- Admin and dashboard tools with Portainer and Homepage
 - Existing extras kept in place: Traefik, Ollama, Open WebUI, and SearXNG
 
 ## Included Services
@@ -16,10 +15,7 @@ This project ships a broader Docker Compose setup for a real home server:
 |---|---:|---|---|
 | Homepage | 3000 | `https://home.<your-domain>` or `http://localhost:3000` | Main dashboard |
 | Portainer | 9000, 9443 | `https://portainer.<your-domain>` or `http://localhost:9000` | Docker management |
-| Uptime Kuma | 3001 | `https://status.<your-domain>` or `http://localhost:3001` | Service monitoring |
-| File Browser | 8082 | `https://files.<your-domain>` or `http://localhost:8082` | Browse media/download folders |
 | Traefik | 80, 443, 8088 | `https://traefik.<your-domain>` | Reverse proxy and dashboard |
-| Actual Budget | 5006 | `https://budget.<your-domain>` or `http://localhost:5006` | Budgeting |
 | Ollama | 11434 | `https://ollama.<your-domain>` or `http://localhost:11434` | Local LLM runtime and model API |
 | Open WebUI | proxied | `https://openwebui.<your-domain>` | Local AI UI |
 | SearXNG | 8080 | `http://localhost:8080` | Metasearch backend |
@@ -78,7 +74,7 @@ mkcert -cert-file local-server.crt -key-file local-server.key local.server '*.lo
 Local hostname setup on macOS/Linux:
 
 ```bash
-echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server status.local.server files.local.server budget.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server' | sudo tee -a /etc/hosts
+echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server' | sudo tee -a /etc/hosts
 ```
 
 Once those are in place, the HTTPS routes should resolve locally without the usual browser certificate warning on this machine.
@@ -93,13 +89,12 @@ Once those are in place, the HTTPS routes should resolve locally without the usu
 6. In Bazarr, connect Sonarr and Radarr and choose subtitle languages/providers.
 7. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
 8. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
-9. Open Actual Budget on `http://<server-ip>:5006` and complete its first-run setup.
-10. In Immich, create the first admin user and start uploading photos.
-11. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
-12. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
-13. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
-14. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
-15. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
+9. In Immich, create the first admin user and start uploading photos.
+10. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
+11. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
+12. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
+13. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
+14. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
 
 ## iCloud Photos Downloader
 
@@ -165,9 +160,6 @@ If `DOMAIN=local.server`, these URLs will work once local DNS or host entries ar
 - `https://home.local.server`
 - `https://traefik.local.server`
 - `https://portainer.local.server`
-- `https://status.local.server`
-- `https://files.local.server`
-- `https://budget.local.server`
 - `https://ollama.local.server`
 - `https://openwebui.local.server`
 - `https://jellyfin.local.server`

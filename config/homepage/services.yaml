@@ -14,11 +14,6 @@
         description: Docker admin
         icon: portainer.png
         container: portainer
-    - Uptime Kuma:
-        href: https://status.local.server
-        description: Health checks
-        icon: uptime-kuma.png
-        container: uptime-kuma
 
 - Media:
     - Jellyfin:
@@ -63,18 +58,6 @@
         description: Photo and image manager
         icon: immich.png
         container: immich-server
-    - File Browser:
-        href: https://files.local.server
-        description: Browse media, photos, and downloads
-        icon: filebrowser.png
-        container: filebrowser
-
-- Finance:
-    - Actual Budget:
-        href: https://budget.local.server
-        description: Budgeting and envelope planning
-        icon: actual-budget.png
-        container: actual-budget
 
 - AI & Search:
     - Ollama:
