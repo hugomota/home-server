@@ -305,13 +305,16 @@ services:
       TZ: ${TZ:-Europe/Lisbon}
       DB_HOSTNAME: immich-postgres
       DB_USERNAME: ${DB_USERNAME:-postgres}
-      DB_PASSWORD: ${DB_PASSWORD:-immichpass}
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       DB_DATABASE_NAME: ${DB_DATABASE_NAME:-immich}
       REDIS_HOSTNAME: immich-redis
-
+    ports:
+      - "2283:2283"
     volumes:
-      - ${UPLOAD_LOCATION}:/usr/src/app/upload
-      - ${PHOTOS_ROOT}/icloud:/mnt/icloud-sync-hugo:ro
+      # Originals and transcoded videos on the data disk (HDD).
+      - ${UPLOAD_LOCATION}:/data
+      # Thumbnails on the SSD so browsing stays fast and the HDD can sleep.
+      - ${DATA_ROOT}/immich/thumbs:/data/thumbs
       - /etc/localtime:/etc/localtime:ro
     depends_on:
       - immich-redis
@@ -326,6 +329,8 @@ services:
     networks:
       - proxy
       - immich
+    healthcheck:
+      disable: false
     restart: unless-stopped
 
   immich-machine-learning:
@@ -337,24 +342,28 @@ services:
       - ${DATA_ROOT}/immich/model-cache:/cache
     networks:
       - immich
+    healthcheck:
+      disable: false
     restart: unless-stopped
 
+  # Job queue for Immich; nothing here needs to survive a restart.
   immich-redis:
-    image: redis:7-alpine
+    image: docker.io/valkey/valkey:9
     container_name: immich-redis
-    command: redis-server --save 60 1 --loglevel warning
-    volumes:
-      - ${DATA_ROOT}/immich/redis:/data
+    healthcheck:
+      test: redis-cli ping | grep -q PONG || exit 1
     networks:
       - immich
     restart: unless-stopped
 
+  # Must match the database image in Immich's official docker-compose.yml.
+  # scripts/immich-update.sh skips the weekly update when they differ.
   immich-postgres:
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     container_name: immich-postgres
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-immichpass}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
       POSTGRES_DB: ${DB_DATABASE_NAME:-immich}
       POSTGRES_INITDB_ARGS: "--data-checksums"
       TZ: ${TZ:-Europe/Lisbon}
@@ -363,6 +372,8 @@ services:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     networks:
       - immich
+    healthcheck:
+      disable: false
     restart: unless-stopped
 
 networks:

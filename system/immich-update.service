@@ -1,0 +1,10 @@
+[Unit]
+Description=Update Immich to the newest release (see scripts/immich-update.sh)
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=hmota
+ExecStart=/home/hmota/projects/home-server/scripts/immich-update.sh
