@@ -9,11 +9,6 @@
         description: Reverse proxy and routing
         icon: traefik.png
         container: traefik
-    - Portainer:
-        href: https://portainer.local.server
-        description: Docker admin
-        icon: portainer.png
-        container: portainer
 
 - Media:
     - Jellyfin:

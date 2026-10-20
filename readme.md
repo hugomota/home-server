@@ -6,7 +6,7 @@ This project ships a broader Docker Compose setup for a real home server:
 - Movie/TV automation with Radarr, Sonarr, Prowlarr, Bazarr, and Jellyseerr
 - Torrents with qBittorrent
 - Photo hosting with Immich and iCloud photo downloads with iCloudPD
-- Admin and dashboard tools with Portainer and Homepage
+- Dashboard with Homepage
 - Existing extras kept in place: Traefik, Ollama, Open WebUI, and SearXNG
 
 ## Included Services
@@ -14,7 +14,6 @@ This project ships a broader Docker Compose setup for a real home server:
 | Service | Port | Access URL | Purpose |
 |---|---:|---|---|
 | Homepage | 3000 | `https://home.<your-domain>` or `http://localhost:3000` | Main dashboard |
-| Portainer | 9000, 9443 | `https://portainer.<your-domain>` or `http://localhost:9000` | Docker management |
 | Traefik | 80, 443, 8088 | `https://traefik.<your-domain>` | Reverse proxy and dashboard |
 | Ollama | 11434 | `https://ollama.<your-domain>` or `http://localhost:11434` | Local LLM runtime and model API |
 | Open WebUI | proxied | `https://openwebui.<your-domain>` | Local AI UI |
@@ -56,6 +55,20 @@ config/icloudpd/
 docker compose up -d
 ```
 
+   This starts only the core services (Traefik, Homepage, Immich, iCloudPD). The rest are grouped in profiles and start only when asked:
+
+   | Profile | Services |
+   |---|---|
+   | `media` | Jellyfin, Jellyseerr, qBittorrent, FlareSolverr, Prowlarr, Sonarr, Radarr, Bazarr |
+   | `ai` | Ollama, Open WebUI, SearXNG |
+
+   ```bash
+   docker compose --profile media up -d      # start a group
+   docker compose --profile media stop       # stop it again
+   ```
+
+   Running services come back after a reboot (`restart: unless-stopped`); stopped ones stay stopped.
+
 4. Add local host entries for the `local.server` names pointing to this server. Wildcards do not work in `/etc/hosts`, so add the explicit hostnames you need.
 5. Open the dashboard at `https://home.<your-domain>` or `http://<server-ip>:3000`, then continue the first-run setup for the apps you want.
 
@@ -74,27 +87,26 @@ mkcert -cert-file local-server.crt -key-file local-server.key local.server '*.lo
 Local hostname setup on macOS/Linux:
 
 ```bash
-echo '127.0.0.1 home.local.server traefik.local.server portainer.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server' | sudo tee -a /etc/hosts
+echo '127.0.0.1 home.local.server traefik.local.server openwebui.local.server jellyfin.local.server request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server photos.local.server' | sudo tee -a /etc/hosts
 ```
 
 Once those are in place, the HTTPS routes should resolve locally without the usual browser certificate warning on this machine.
 
 ## Recommended Setup Order
 
-1. Open Portainer and finish the first-run admin setup immediately so it does not time out its setup screen.
-2. Open qBittorrent and set download categories and folders inside `/downloads`.
-3. Open Prowlarr and add your indexers.
-4. Connect Prowlarr to Sonarr and Radarr.
-5. In Sonarr and Radarr, add qBittorrent as the download client and point root folders to `/tv` and `/movies`.
-6. In Bazarr, connect Sonarr and Radarr and choose subtitle languages/providers.
-7. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
-8. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
-9. In Immich, create the first admin user and start uploading photos.
-10. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
-11. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
-12. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
-13. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
-14. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
+1. Open qBittorrent and set download categories and folders inside `/downloads`.
+2. Open Prowlarr and add your indexers.
+3. Connect Prowlarr to Sonarr and Radarr.
+4. In Sonarr and Radarr, add qBittorrent as the download client and point root folders to `/tv` and `/movies`.
+5. In Bazarr, connect Sonarr and Radarr and choose subtitle languages/providers.
+6. In Jellyfin, add libraries from `/media/movies` and `/media/tv`.
+7. In Jellyseerr, connect Jellyfin plus Sonarr/Radarr so requests can flow automatically.
+8. In Immich, create the first admin user and start uploading photos.
+9. Set `ICLOUDPD_USERNAME` in `.env`, then complete the one-time iCloud authentication described below.
+10. In Immich, add `photos/icloud` as an external library if you want downloaded iCloud photos to appear there.
+11. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
+12. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
+13. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
 
 ## iCloud Photos Downloader
 
@@ -159,7 +171,6 @@ If `DOMAIN=local.server`, these URLs will work once local DNS or host entries ar
 
 - `https://home.local.server`
 - `https://traefik.local.server`
-- `https://portainer.local.server`
 - `https://ollama.local.server`
 - `https://openwebui.local.server`
 - `https://jellyfin.local.server`
@@ -188,7 +199,6 @@ For the Traefik UI specifically:
 - Open WebUI is configured to talk to the local Ollama service at `http://ollama:11434`, so any model that Ollama supports can be used there after you pull it.
 - `/etc/hosts` does not support wildcard entries, so each `*.local.server` hostname must be listed explicitly unless you run your own local DNS.
 - The Traefik certificate is generated with `mkcert`, which removes browser trust warnings on devices where the mkcert local CA has been installed.
-- Portainer may disable its first-run page if you leave it idle too long before creating the admin user. If that happens, restart just the Portainer service and open it again right away.
 - Sonarr is pinned to `4.0.15.2941-ls295` instead of `latest` because the newer image stream triggered a broken authorization pipeline in this stack.
 - qBittorrent is included without a VPN container so the setup stays simple. If you want, we can add Gluetun later.
 - Immich is one of the heavier services in the stack. Give the host enough RAM before enabling everything together.
