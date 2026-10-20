@@ -141,7 +141,8 @@ services:
     container_name: jellyfin
     environment:
       <<: *common-env
-
+    ports:
+      - "8096:8096"
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
       - "/Volumes/Data/Media/Movies:/media/movies"

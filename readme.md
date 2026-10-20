@@ -18,7 +18,7 @@ This project ships a broader Docker Compose setup for a real home server:
 | Ollama | 11434 | `https://ollama.<your-domain>` or `http://localhost:11434` | Local LLM runtime and model API |
 | Open WebUI | proxied | `https://openwebui.<your-domain>` | Local AI UI |
 | SearXNG | 8080 | `http://localhost:8080` | Metasearch backend |
-| Jellyfin | 8096, 8920 | `https://jellyfin.<your-domain>` or `http://localhost:8096` | Media server |
+| Jellyfin | 8096 | `http://<server-ip>:8096` (TV/Android apps) or `https://jellyfin.<your-domain>` | Media server |
 | Jellyseerr | 5055 | `https://request.<your-domain>` or `http://localhost:5055` | Media request portal |
 | qBittorrent | 8081, 6881 | `https://torrent.<your-domain>` or `http://localhost:8081` | Torrent client |
 | Prowlarr | 9696 | `https://indexers.<your-domain>` or `http://localhost:9696` | Indexer management |
@@ -104,6 +104,36 @@ Once those are in place, the HTTPS routes should resolve locally without the usu
 10. Open WebUI at `https://openwebui.<your-domain>` and use the connected Ollama backend for local models.
 11. Pull models into Ollama with commands like `docker compose exec -T ollama ollama pull llama3.2`, `docker compose exec -T ollama ollama pull qwen2.5:7b`, or `docker compose exec -T ollama ollama pull mistral`.
 12. Use either the secure `https://<service>.<your-domain>` routes or the direct host ports, whichever is more convenient for your device.
+
+## Watching on a TV / Android Box
+
+Jellyfin has two parts:
+
+- **Jellyfin server**: the `jellyfin` container on this host. It keeps the library and streams the video. It is always on (no profile).
+- **Jellyfin app**: installed on the device you watch on. It is only the screen and remote; nothing else is needed on the server to watch.
+
+On an Android TV box, install **"Jellyfin for Android TV"** from the Play Store and enter the server as `http://<server-ip>:8096` (here: `http://192.168.1.50:8096`). The app remembers it.
+
+Why the IP and port instead of `https://jellyfin.<your-domain>`:
+
+- Traefik only routes a request once it reaches the server. Turning `jellyfin.local.server` into `192.168.1.50` is a DNS job, and today that only works on devices where the name was added to `/etc/hosts` by hand. Android boxes, phones and TVs can't do that.
+- The HTTPS certificate comes from `mkcert`, which those devices don't trust, so the Jellyfin app may refuse to connect.
+- A local DNS server (e.g. AdGuard Home) could serve `*.local.server` to the whole network, but the router must point to it, home internet breaks when the server is down, and the certificate problem stays. Not worth it for now.
+
+Port `8096` is published only on the home network; it is not reachable from the internet unless a port is forwarded on the router.
+
+The Mac mini's Ivy Bridge GPU can't hardware-transcode HEVC/4K, so playback relies on the box playing files directly (most Android boxes do). If a file stutters, it is probably being transcoded on the CPU.
+
+### Jellyfin vs Jellyseerr
+
+- **Jellyfin** plays what is already on the server.
+- **Jellyseerr** is a request page for things you don't have yet. It doesn't play or download anything itself; it passes the request along:
+
+```
+Jellyseerr  ->  Radarr (movies) / Sonarr (series)  ->  Prowlarr finds it  ->  qBittorrent downloads it  ->  shows up in Jellyfin
+```
+
+That is why Jellyfin is always on, while Jellyseerr sits in the `media` profile with the downloaders: start the profile to request something, stop it when the download is done.
 
 ## Photo Backup to AWS S3 Glacier
 
