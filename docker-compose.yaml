@@ -145,8 +145,8 @@ services:
       - "8096:8096"
     volumes:
       - ${CONFIG_ROOT}/jellyfin:/config
-      - "/Volumes/Data/Media/Movies:/media/movies"
-      - "/Volumes/Data/Media/Tv Shows:/media/tv"
+      - ${MEDIA_ROOT}/movies:/media/movies
+      - ${MEDIA_ROOT}/tv:/media/tv
       - ${DATA_ROOT}/jellyfin-cache:/cache
     labels:
       - traefik.enable=true
