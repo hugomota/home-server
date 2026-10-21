@@ -192,11 +192,10 @@ Containers reach each other by service name on the `proxy` network (e.g.
    "Português + English" (pt, en) applied to new series and movies; provider
    Podnapisi (no account). Add OpenSubtitles.com with your own account for
    better results.
-5. **Seerr:** first visit runs a wizard: sign in with the Jellyfin admin
-   account (Jellyfin URL `http://jellyfin:8096`), pick the libraries, then
-   add Sonarr (`sonarr`, port 8989, root `/data/tv`) and Radarr (`radarr`,
-   port 7878, root `/data/movies`) with their API keys (Settings > General
-   in each app).
+5. **Seerr:** sign in with the Jellyfin account (Seerr has no password of
+   its own; Jellyfin URL `http://jellyfin:8096`), libraries Filmes and
+   Séries. Linked to Sonarr (`sonarr:8989`, `/data/tv`) and Radarr
+   (`radarr:7878`, `/data/movies`), quality profile HD-1080p.
 
 qBittorrent runs without a VPN.
 
