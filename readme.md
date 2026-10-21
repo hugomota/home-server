@@ -133,32 +133,6 @@ markers (it refuses to start if the disk is missing); leave them.
 - **Requirements:** at least 6 GB RAM (8 GB here); the ML container needs an
   `x86-64-v2` CPU (Ivy Bridge qualifies).
 
-### Importing existing photos
-
-Old photos were imported with [immich-go](https://github.com/simulot/immich-go)
-(single binary, used from a temporary folder, not installed). The goal was a
-clean catalog: Immich sorts everything by date; no albums or tags come from
-the source folders.
-
-```bash
-# folders (originals first, so later exact duplicates are skipped)
-immich-go upload from-folder --server=http://192.168.1.50:2283 --api-key=<key> \
-  --folder-as-album=NONE --on-errors=continue <folder>
-
-# Google Photos Takeout: pass all parts together (photo and JSON can be in different parts)
-immich-go upload from-google-photos --server=http://192.168.1.50:2283 --api-key=<key> \
-  --sync-albums=false --takeout-tag=false --people-tag=false --include-unmatched \
-  --on-errors=continue "Takeout" "Takeout 2" ...
-```
-
-- Exact duplicates (same file) are skipped automatically. Near duplicates
-  (e.g. Google's recompressed copies) are reviewed in Immich's
-  **Utilities > Duplicates**.
-- Apple's Photos export also contains `Albums/` and `Memories/` folders: those
-  are only CSV files, not photos.
-- Keep the API key out of chat and logs: store it in a file only you can read
-  (`~/.immich-api-key`, `chmod 600`).
-
 ## Jellyfin
 
 - **Server** = the `jellyfin` container (always on). **App** = what you install
