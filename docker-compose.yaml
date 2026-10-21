@@ -161,22 +161,23 @@ services:
       - proxy
     restart: unless-stopped
 
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
+  # Seerr: request page (successor of Jellyseerr/Overseerr since 2026).
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.5.0
+    container_name: seerr
     profiles: [media]
+    init: true
     environment:
       LOG_LEVEL: info
       TZ: ${TZ:-Europe/Lisbon}
-
     volumes:
-      - ${CONFIG_ROOT}/jellyseerr:/app/config
+      - ${CONFIG_ROOT}/seerr:/app/config
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jellyseerr.rule=Host(`request.${DOMAIN}`)
-      - traefik.http.routers.jellyseerr.entrypoints=websecure
-      - traefik.http.routers.jellyseerr.tls=true
-      - traefik.http.services.jellyseerr.loadbalancer.server.port=5055
+      - traefik.http.routers.seerr.rule=Host(`request.${DOMAIN}`)
+      - traefik.http.routers.seerr.entrypoints=websecure
+      - traefik.http.routers.seerr.tls=true
+      - traefik.http.services.seerr.loadbalancer.server.port=5055
     networks:
       - proxy
     restart: unless-stopped
@@ -194,7 +195,8 @@ services:
       - "6881:6881/udp"
     volumes:
       - ${CONFIG_ROOT}/qbittorrent:/config
-      - ${DOWNLOADS_ROOT}:/downloads
+      # Same /data tree as Sonarr/Radarr so imports are instant hardlinks.
+      - ${MEDIA_ROOT}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.qbittorrent.rule=Host(`torrent.${DOMAIN}`)
@@ -247,8 +249,7 @@ services:
 
     volumes:
       - ${CONFIG_ROOT}/sonarr:/config
-      - ${MEDIA_ROOT}/tv:/tv
-      - ${DOWNLOADS_ROOT}:/downloads
+      - ${MEDIA_ROOT}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
@@ -268,8 +269,7 @@ services:
 
     volumes:
       - ${CONFIG_ROOT}/radarr:/config
-      - ${MEDIA_ROOT}/movies:/movies
-      - ${DOWNLOADS_ROOT}:/downloads
+      - ${MEDIA_ROOT}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
@@ -289,8 +289,7 @@ services:
 
     volumes:
       - ${CONFIG_ROOT}/bazarr:/config
-      - ${MEDIA_ROOT}/movies:/movies
-      - ${MEDIA_ROOT}/tv:/tv
+      - ${MEDIA_ROOT}:/data
     labels:
       - traefik.enable=true
       - traefik.http.routers.bazarr.rule=Host(`subtitles.${DOMAIN}`)

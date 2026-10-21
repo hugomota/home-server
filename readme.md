@@ -15,7 +15,7 @@ are grouped in profiles and start only when asked.
 | core | Jellyfin | `http://192.168.1.50:8096` / `https://jellyfin.local.server` | Plays movies and series |
 | core | Homepage | `https://home.local.server` | Dashboard with links and status |
 | core | Traefik | `https://traefik.local.server` | Reverse proxy for the `*.local.server` names |
-| `media` | Jellyseerr | `https://request.local.server` | Request page for new movies/series |
+| `media` | Seerr | `https://request.local.server` | Request page for new movies/series |
 | `media` | Radarr / Sonarr | `https://radarr.local.server` / `https://sonarr.local.server` | Movie / series automation |
 | `media` | Prowlarr + FlareSolverr | `https://indexers.local.server` | Indexers (FlareSolverr is internal) |
 | `media` | qBittorrent | `https://torrent.local.server` (torrent port 6881) | Downloads |
@@ -88,8 +88,14 @@ still boots and SSH keeps working. It spins down after 20 idle minutes
   thumbs/                           empty; thumbnails are mounted from the SSD
 /srv/data/media/movies/             Jellyfin / Radarr
 /srv/data/media/tv/                 Jellyfin / Sonarr
-/srv/data/downloads/                qBittorrent
+/srv/data/media/downloads/          qBittorrent (tv-sonarr/, radarr/ per category)
 ```
+
+qBittorrent, Sonarr, Radarr and Bazarr all mount `/srv/data/media` as
+`/data`, so they see the same paths (`/data/downloads`, `/data/tv`,
+`/data/movies`). Because downloads and the library are on the same mount,
+Sonarr/Radarr import finished files as **hardlinks**: instant, and no
+second copy on the disk while the torrent keeps seeding.
 
 Never add, move or delete files inside `/srv/data/photos` by hand: Immich
 tracks every file in its database. The `.immich` files are Immich's mount
@@ -98,7 +104,7 @@ markers (it refuses to start if the disk is missing); leave them.
 ## Setup From Scratch
 
 1. Mount the data disk at `/srv/data` and create
-   `photos`, `media/movies`, `media/tv`, `downloads` (owned by your user).
+   `photos`, `media/movies`, `media/tv`, `media/downloads` (owned by your user).
 2. `cp .env.example .env && chmod 600 .env`, then set at least:
    - `DB_PASSWORD`: `openssl rand -hex 24` (letters and numbers only)
    - `SEARXNG_SECRET`: `openssl rand -hex 32`
@@ -151,29 +157,46 @@ markers (it refuses to start if the disk is missing); leave them.
   encoding off. HEVC/4K files must be played directly by the box (most can);
   if one stutters, it is being transcoded on the CPU.
 
-### Jellyfin vs Jellyseerr
+### Jellyfin vs Seerr
 
 - **Jellyfin** plays what is already on the server.
-- **Jellyseerr** is a request page for things you don't have yet. It doesn't
-  play or download anything itself; it passes the request along:
+- **Seerr** is a request page for things you don't have yet. It doesn't
+  play or download anything itself; it passes the request along. (Seerr
+  replaced Jellyseerr and Overseerr in 2026, when the two projects merged.)
 
 ```
-Jellyseerr -> Radarr (movies) / Sonarr (series) -> Prowlarr finds it -> qBittorrent downloads it -> shows up in Jellyfin
+Seerr -> Radarr (movies) / Sonarr (series) -> Prowlarr finds it -> qBittorrent downloads it -> shows up in Jellyfin
 ```
 
-That is why Jellyfin is always on, while Jellyseerr sits in the `media`
+That is why Jellyfin is always on, while Seerr sits in the `media`
 profile with the downloaders: start the profile to request something, stop
 it when the download is done.
 
-### Media automation (first run of `media-on`)
+### Media automation (how the apps are linked)
 
-1. qBittorrent: set download categories and folders inside `/downloads`.
-2. Prowlarr: add indexers; connect it to Sonarr and Radarr (and FlareSolverr
-   at `http://flaresolverr:8191` for indexers behind Cloudflare).
-3. Sonarr / Radarr: qBittorrent as download client; root folders `/tv` and
-   `/movies`.
-4. Bazarr: connect Sonarr and Radarr; choose subtitle languages.
-5. Jellyseerr: connect Jellyfin plus Sonarr/Radarr.
+Containers reach each other by service name on the `proxy` network (e.g.
+`http://sonarr:8989`), never through the `*.local.server` names.
+
+1. **qBittorrent:** default save path `/data/downloads`, automatic torrent
+   management on, categories `tv-sonarr` and `radarr`. WebUI user `admin`
+   with your own password (Tools > Options > Web UI).
+2. **Prowlarr:** apps Sonarr (`http://sonarr:8989`) and Radarr
+   (`http://radarr:7878`) with full sync, so indexers added here appear in
+   both. FlareSolverr is an indexer proxy (`http://flaresolverr:8191/`) used
+   only by indexers with the tag `flaresolverr`. **No indexers are added**:
+   that choice is yours.
+3. **Sonarr / Radarr:** root folders `/data/tv` and `/data/movies`,
+   hardlinks and renaming on, qBittorrent (`qbittorrent:8081`) as download
+   client with categories `tv-sonarr` / `radarr`.
+4. **Bazarr:** linked to `sonarr:8989` and `radarr:7878`; language profile
+   "Português + English" (pt, en) applied to new series and movies; provider
+   Podnapisi (no account). Add OpenSubtitles.com with your own account for
+   better results.
+5. **Seerr:** first visit runs a wizard: sign in with the Jellyfin admin
+   account (Jellyfin URL `http://jellyfin:8096`), pick the libraries, then
+   add Sonarr (`sonarr`, port 8989, root `/data/tv`) and Radarr (`radarr`,
+   port 7878, root `/data/movies`) with their API keys (Settings > General
+   in each app).
 
 qBittorrent runs without a VPN.
 

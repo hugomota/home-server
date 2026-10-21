@@ -16,11 +16,11 @@
         description: Stream movies and TV
         icon: jellyfin.png
         container: jellyfin
-    - Jellyseerr:
+    - Seerr:
         href: https://request.local.server
         description: Request movies and shows
-        icon: jellyseerr.png
-        container: jellyseerr
+        icon: seerr.png
+        container: seerr
     - Sonarr:
         href: https://sonarr.local.server
         description: TV automation
