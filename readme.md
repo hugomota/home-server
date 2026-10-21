@@ -178,8 +178,11 @@ Containers reach each other by service name on the `proxy` network (e.g.
 `http://sonarr:8989`), never through the `*.local.server` names.
 
 1. **qBittorrent:** default save path `/data/downloads`, automatic torrent
-   management on, categories `tv-sonarr` and `radarr`. WebUI user `admin`
-   with your own password (Tools > Options > Web UI).
+   management on, categories `tv-sonarr` and `radarr`. WebUI user `hmota`
+   with your own password (Tools > Options > Web UI). Forgot it: stop the
+   container, delete the `Password_PBKDF2=` line in
+   `config/qbittorrent/qBittorrent/qBittorrent.conf`, start it again and
+   read the temporary password with `docker logs qbittorrent`.
 2. **Prowlarr:** apps Sonarr (`http://sonarr:8989`) and Radarr
    (`http://radarr:7878`) with full sync, so indexers added here appear in
    both. FlareSolverr is an indexer proxy (`http://flaresolverr:8191/`) used
@@ -187,7 +190,11 @@ Containers reach each other by service name on the `proxy` network (e.g.
    that choice is yours.
 3. **Sonarr / Radarr:** root folders `/data/tv` and `/data/movies`,
    hardlinks and renaming on, qBittorrent (`qbittorrent:8081`) as download
-   client with categories `tv-sonarr` / `radarr`.
+   client with categories `tv-sonarr` / `radarr`. They log in with a
+   qBittorrent **WebUI API key**, not the user/password: qBittorrent 5.2+
+   rejects Sonarr 4's old login flow with 401 ("Unable to connect"). If the
+   key is ever rotated in qBittorrent (Options > Web UI), paste the new one
+   into the qBittorrent download client in both apps.
 4. **Bazarr:** linked to `sonarr:8989` and `radarr:7878`; language profile
    "Português + English" (pt, en) applied to new series and movies; provider
    Podnapisi (no account). Add OpenSubtitles.com with your own account for
