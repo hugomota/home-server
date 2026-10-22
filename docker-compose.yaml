@@ -19,6 +19,15 @@ services:
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
       - --entrypoints.websecure.address=:443
+      # One Let's Encrypt wildcard cert for *.${DOMAIN} (each router asks for
+      # it with tls.certresolver=le), via the DuckDNS DNS challenge: no router
+      # ports needed. Renewed automatically.
+      - --certificatesresolvers.le.acme.dnschallenge.provider=duckdns
+      - --certificatesresolvers.le.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.caserver=${ACME_CA_SERVER:-https://acme-v02.api.letsencrypt.org/directory}
+    environment:
+      DUCKDNS_TOKEN: ${DUCKDNS_TOKEN}
     ports:
       - "80:80"
       - "443:443"
@@ -26,12 +35,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${CONFIG_ROOT}/traefik/dynamic:/etc/traefik/dynamic:ro
       - ${CONFIG_ROOT}/traefik/certs:/etc/traefik/certs:ro
+      - ${CONFIG_ROOT}/traefik/letsencrypt:/letsencrypt
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.service=api@internal
       - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=le
+      - traefik.http.routers.traefik.tls.domains[0].main=*.${DOMAIN}
       # Only the home network; used by apps whose own login is off.
       - traefik.http.middlewares.lan-only.ipallowlist.sourcerange=192.168.1.0/24
     networks:
@@ -55,6 +67,8 @@ services:
       - traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)
       - traefik.http.routers.homepage.entrypoints=websecure
       - traefik.http.routers.homepage.tls=true
+      - traefik.http.routers.homepage.tls.certresolver=le
+      - traefik.http.routers.homepage.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.homepage.loadbalancer.server.port=3000
     networks:
       - proxy
@@ -83,6 +97,8 @@ services:
       - traefik.http.routers.open-webui.rule=Host(`openwebui.${DOMAIN}`)
       - traefik.http.routers.open-webui.entrypoints=websecure
       - traefik.http.routers.open-webui.tls=true
+      - traefik.http.routers.open-webui.tls.certresolver=le
+      - traefik.http.routers.open-webui.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.open-webui.loadbalancer.server.port=8080
     networks:
       - proxy
@@ -102,6 +118,8 @@ services:
       - traefik.http.routers.ollama.rule=Host(`ollama.${DOMAIN}`)
       - traefik.http.routers.ollama.entrypoints=websecure
       - traefik.http.routers.ollama.tls=true
+      - traefik.http.routers.ollama.tls.certresolver=le
+      - traefik.http.routers.ollama.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.ollama.loadbalancer.server.port=11434
     networks:
       - proxy
@@ -133,6 +151,8 @@ services:
       - traefik.http.routers.searxng.rule=Host(`search.${DOMAIN}`)
       - traefik.http.routers.searxng.entrypoints=websecure
       - traefik.http.routers.searxng.tls=true
+      - traefik.http.routers.searxng.tls.certresolver=le
+      - traefik.http.routers.searxng.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.searxng.loadbalancer.server.port=8080
     networks:
       - proxy
@@ -158,6 +178,8 @@ services:
       - traefik.http.routers.jellyfin.rule=Host(`jellyfin.${DOMAIN}`)
       - traefik.http.routers.jellyfin.entrypoints=websecure
       - traefik.http.routers.jellyfin.tls=true
+      - traefik.http.routers.jellyfin.tls.certresolver=le
+      - traefik.http.routers.jellyfin.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.jellyfin.loadbalancer.server.port=8096
     networks:
       - proxy
@@ -179,6 +201,8 @@ services:
       - traefik.http.routers.seerr.rule=Host(`request.${DOMAIN}`)
       - traefik.http.routers.seerr.entrypoints=websecure
       - traefik.http.routers.seerr.tls=true
+      - traefik.http.routers.seerr.tls.certresolver=le
+      - traefik.http.routers.seerr.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.seerr.loadbalancer.server.port=5055
     networks:
       - proxy
@@ -204,6 +228,8 @@ services:
       - traefik.http.routers.qbittorrent.rule=Host(`torrent.${DOMAIN}`)
       - traefik.http.routers.qbittorrent.entrypoints=websecure
       - traefik.http.routers.qbittorrent.tls=true
+      - traefik.http.routers.qbittorrent.tls.certresolver=le
+      - traefik.http.routers.qbittorrent.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.qbittorrent.loadbalancer.server.port=8081
     networks:
       - proxy
@@ -237,6 +263,8 @@ services:
       - traefik.http.routers.prowlarr.rule=Host(`indexers.${DOMAIN}`)
       - traefik.http.routers.prowlarr.entrypoints=websecure
       - traefik.http.routers.prowlarr.tls=true
+      - traefik.http.routers.prowlarr.tls.certresolver=le
+      - traefik.http.routers.prowlarr.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.routers.prowlarr.middlewares=lan-only@docker
       - traefik.http.services.prowlarr.loadbalancer.server.port=9696
     networks:
@@ -258,6 +286,8 @@ services:
       - traefik.http.routers.sonarr.rule=Host(`sonarr.${DOMAIN}`)
       - traefik.http.routers.sonarr.entrypoints=websecure
       - traefik.http.routers.sonarr.tls=true
+      - traefik.http.routers.sonarr.tls.certresolver=le
+      - traefik.http.routers.sonarr.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.routers.sonarr.middlewares=lan-only@docker
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
     networks:
@@ -279,6 +309,8 @@ services:
       - traefik.http.routers.radarr.rule=Host(`radarr.${DOMAIN}`)
       - traefik.http.routers.radarr.entrypoints=websecure
       - traefik.http.routers.radarr.tls=true
+      - traefik.http.routers.radarr.tls.certresolver=le
+      - traefik.http.routers.radarr.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.routers.radarr.middlewares=lan-only@docker
       - traefik.http.services.radarr.loadbalancer.server.port=7878
     networks:
@@ -300,6 +332,8 @@ services:
       - traefik.http.routers.bazarr.rule=Host(`subtitles.${DOMAIN}`)
       - traefik.http.routers.bazarr.entrypoints=websecure
       - traefik.http.routers.bazarr.tls=true
+      - traefik.http.routers.bazarr.tls.certresolver=le
+      - traefik.http.routers.bazarr.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.bazarr.loadbalancer.server.port=6767
     networks:
       - proxy
@@ -332,6 +366,8 @@ services:
       - traefik.http.routers.immich.rule=Host(`photos.${DOMAIN}`)
       - traefik.http.routers.immich.entrypoints=websecure
       - traefik.http.routers.immich.tls=true
+      - traefik.http.routers.immich.tls.certresolver=le
+      - traefik.http.routers.immich.tls.domains[0].main=*.${DOMAIN}
       - traefik.http.services.immich.loadbalancer.server.port=2283
     networks:
       - proxy

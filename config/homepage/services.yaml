@@ -1,72 +1,72 @@
 - Dashboard:
     - Homepage:
-        href: https://home.local.server
+        href: https://home.hmota.duckdns.org
         description: Main dashboard
         icon: homepage.png
         container: homepage
     - Traefik:
-        href: https://traefik.local.server
+        href: https://traefik.hmota.duckdns.org
         description: Reverse proxy and routing
         icon: traefik.png
         container: traefik
 
 - Media:
     - Jellyfin:
-        href: https://jellyfin.local.server
+        href: https://jellyfin.hmota.duckdns.org
         description: Stream movies and TV
         icon: jellyfin.png
         container: jellyfin
     - Seerr:
-        href: https://request.local.server
+        href: https://request.hmota.duckdns.org
         description: Request movies and shows
         icon: seerr.png
         container: seerr
     - Sonarr:
-        href: https://sonarr.local.server
+        href: https://sonarr.hmota.duckdns.org
         description: TV automation
         icon: sonarr.png
         container: sonarr
     - Radarr:
-        href: https://radarr.local.server
+        href: https://radarr.hmota.duckdns.org
         description: Movie automation
         icon: radarr.png
         container: radarr
     - Prowlarr:
-        href: https://indexers.local.server
+        href: https://indexers.hmota.duckdns.org
         description: Indexer management
         icon: prowlarr.png
         container: prowlarr
     - Bazarr:
-        href: https://subtitles.local.server
+        href: https://subtitles.hmota.duckdns.org
         description: Subtitle automation
         icon: bazarr.png
         container: bazarr
     - qBittorrent:
-        href: https://torrent.local.server
+        href: https://torrent.hmota.duckdns.org
         description: Torrent downloads
         icon: qbittorrent.png
         container: qbittorrent
 
 - Photos:
     - Immich:
-        href: https://photos.local.server
+        href: https://photos.hmota.duckdns.org
         description: Photo and image manager
         icon: immich.png
         container: immich-server
 
 - AI & Search:
     - Ollama:
-        href: https://ollama.local.server
+        href: https://ollama.hmota.duckdns.org
         description: Local LLM runtime and model API
         icon: si-ollama
         container: ollama
     - Open WebUI:
-        href: https://openwebui.local.server
+        href: https://openwebui.hmota.duckdns.org
         description: Local AI interface
         icon: open-webui.png
         container: open-webui
     - SearXNG:
-        href: https://search.local.server
+        href: https://search.hmota.duckdns.org
         description: Metasearch backend
         icon: searxng.png
         container: searxng

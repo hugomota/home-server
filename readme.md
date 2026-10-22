@@ -11,17 +11,17 @@ are grouped in profiles and start only when asked.
 
 | Profile | Service | Address | Purpose |
 |---|---|---|---|
-| core | Immich | `http://192.168.1.50:2283` / `https://photos.local.server` | Photos and videos (server + ML + Postgres + Valkey) |
-| core | Jellyfin | `http://192.168.1.50:8096` / `https://jellyfin.local.server` | Plays movies and series |
-| core | Homepage | `https://home.local.server` | Dashboard with links and status |
-| core | Traefik | `https://traefik.local.server` | Reverse proxy for the `*.local.server` names |
-| `media` | Seerr | `https://request.local.server` | Request page for new movies/series |
-| `media` | Radarr / Sonarr | `https://radarr.local.server` / `https://sonarr.local.server` | Movie / series automation |
-| `media` | Prowlarr + FlareSolverr | `https://indexers.local.server` | Indexers (FlareSolverr is internal) |
-| `media` | qBittorrent | `https://torrent.local.server` (torrent port 6881) | Downloads |
-| `media` | Bazarr | `https://subtitles.local.server` | Subtitles |
-| `ai` | Open WebUI + Ollama | `https://openwebui.local.server` / `https://ollama.local.server` | Local AI chat and models |
-| `ai` | SearXNG | `https://search.local.server` | Web search for Open WebUI |
+| core | Immich | `http://192.168.1.50:2283` / `https://photos.hmota.duckdns.org` | Photos and videos (server + ML + Postgres + Valkey) |
+| core | Jellyfin | `http://192.168.1.50:8096` / `https://jellyfin.hmota.duckdns.org` | Plays movies and series |
+| core | Homepage | `https://home.hmota.duckdns.org` | Dashboard with links and status |
+| core | Traefik | `https://traefik.hmota.duckdns.org` | Reverse proxy for the `*.hmota.duckdns.org` names |
+| `media` | Seerr | `https://request.hmota.duckdns.org` | Request page for new movies/series |
+| `media` | Radarr / Sonarr | `https://radarr.hmota.duckdns.org` / `https://sonarr.hmota.duckdns.org` | Movie / series automation |
+| `media` | Prowlarr + FlareSolverr | `https://indexers.hmota.duckdns.org` | Indexers (FlareSolverr is internal) |
+| `media` | qBittorrent | `https://torrent.hmota.duckdns.org` (torrent port 6881) | Downloads |
+| `media` | Bazarr | `https://subtitles.hmota.duckdns.org` | Subtitles |
+| `ai` | Open WebUI + Ollama | `https://openwebui.hmota.duckdns.org` / `https://ollama.hmota.duckdns.org` | Local AI chat and models |
+| `ai` | SearXNG | `https://search.hmota.duckdns.org` | Web search for Open WebUI |
 
 ### Starting and stopping groups
 
@@ -38,28 +38,24 @@ script stops only the profile's own services.
 Running services come back after a reboot (`restart: unless-stopped`);
 stopped ones stay stopped.
 
-### Friendly names (`*.local.server`)
+### Names and HTTPS (`*.hmota.duckdns.org`)
 
-Traefik routes by name, but something must turn the name into
-`192.168.1.50`. There is no local DNS, so add the names to `/etc/hosts` on
-each computer that should use them (macOS: `sudo nano /etc/hosts`, then
-`sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder`):
+`hmota.duckdns.org` is a free DuckDNS name whose IP is set to
+`192.168.1.50` (on duckdns.org, "current ip"), and DuckDNS answers the same
+IP for every name under it. So every device at home finds
+`https://<service>.hmota.duckdns.org` with no `/etc/hosts` entries; from
+outside the home it points to a private address and leads nowhere. The MEO
+router does not block public names that point to private IPs.
 
-```
-192.168.1.50  home.local.server traefik.local.server photos.local.server jellyfin.local.server
-192.168.1.50  request.local.server torrent.local.server indexers.local.server sonarr.local.server radarr.local.server subtitles.local.server
-192.168.1.50  openwebui.local.server ollama.local.server search.local.server falaplay.local.server
-```
+Traefik gets one Let's Encrypt wildcard certificate for
+`*.hmota.duckdns.org` with the DNS challenge (`DUCKDNS_TOKEN` in `.env`), so
+no router ports are open, and renews it by itself. It is stored in
+`config/traefik/letsencrypt/acme.json`. Browsers trust it with no warning.
+`ACME_CA_SERVER` in `.env` can point to Let's Encrypt's staging server for
+tests; leave it unset for real certificates.
 
-TVs, phones and Android boxes can't do this, so they use the direct
-`IP:port` addresses (Jellyfin 8096, Immich 2283).
-
-HTTPS currently uses Traefik's built-in self-signed certificate, so browsers
-show a warning once. To remove it, create a trusted certificate with
-`mkcert` (`mkcert -install`, then
-`mkcert -cert-file config/traefik/certs/local-server.crt -key-file config/traefik/certs/local-server.key local.server '*.local.server'`)
-and add a Traefik file-provider config in `config/traefik/dynamic/` that
-points to it. Not done yet.
+If DuckDNS changes the IP (e.g. "update ip" pressed on the website), set it
+back to `192.168.1.50`. Nothing on the server updates it automatically.
 
 ## Disks and Folders
 
@@ -175,7 +171,7 @@ it when the download is done.
 ### Media automation (how the apps are linked)
 
 Containers reach each other by service name on the `proxy` network (e.g.
-`http://sonarr:8989`), never through the `*.local.server` names.
+`http://sonarr:8989`), never through the `*.hmota.duckdns.org` names.
 
 1. **qBittorrent:** default save path `/data/downloads`, automatic torrent
    management on, categories `tv-sonarr` and `radarr`. WebUI user `hmota`
@@ -273,7 +269,7 @@ request run code here).
 
 | Project | Address | Port |
 |---|---|---|
-| fala-play | `http://192.168.1.50:8090` / `https://falaplay.local.server` | 8090 |
+| fala-play | `http://192.168.1.50:8090` / `https://falaplay.hmota.duckdns.org` | 8090 |
 
 ## Photo Backup to AWS S3 (Deep Archive)
 
