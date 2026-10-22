@@ -183,6 +183,12 @@ Containers reach each other by service name on the `proxy` network (e.g.
    container, delete the `Password_PBKDF2=` line in
    `config/qbittorrent/qBittorrent/qBittorrent.conf`, start it again and
    read the temporary password with `docker logs qbittorrent`.
+   No password asked from the home network: Web UI > "Bypass authentication
+   for clients in whitelisted IP subnets" = `192.168.1.0/24`, with reverse
+   proxy support on and Traefik's network `172.19.0.0/16` as trusted proxy
+   (so qBittorrent sees the real client IP). Upload limited to 10 KiB/s and
+   seeding ratio limit 0 (torrents stop as soon as they finish); "don't
+   count slow torrents" on so stuck downloads don't block the queue.
 2. **Prowlarr:** apps Sonarr (`http://sonarr:8989`) and Radarr
    (`http://radarr:7878`) with full sync, so indexers added here appear in
    both. FlareSolverr is an indexer proxy (`http://flaresolverr:8191/`) used
@@ -203,6 +209,16 @@ Containers reach each other by service name on the `proxy` network (e.g.
    its own; Jellyfin URL `http://jellyfin:8096`), libraries Filmes and
    Séries. Linked to Sonarr (`sonarr:8989`, `/data/tv`) and Radarr
    (`radarr:7878`, `/data/movies`), quality profile HD-1080p.
+
+Sonarr, Radarr and Prowlarr have no login of their own:
+`AuthenticationMethod` is `External` in each `config/<app>/config.xml`
+(not settable in the UI). Access is guarded by Traefik instead: their
+routers use the `lan-only` middleware (defined on the traefik service),
+which answers 403 to anything outside `192.168.1.0/24`. "Disabled for
+Local Addresses" does not work behind Traefik: the apps treat every
+request with an `X-Forwarded-For` header as remote. To bring the login
+back, set the method to `Forms` and restart the app. Bazarr has no login
+at all.
 
 qBittorrent runs without a VPN.
 
