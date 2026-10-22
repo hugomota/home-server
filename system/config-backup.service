@@ -1,0 +1,10 @@
+[Unit]
+Description=Back up app configs and the Immich database to the data HDD (see scripts/config-backup.sh)
+Requires=docker.service
+After=docker.service srv-data.mount
+RequiresMountsFor=/srv/data
+
+[Service]
+Type=oneshot
+User=hmota
+ExecStart=/home/hmota/projects/home-server/scripts/config-backup.sh
