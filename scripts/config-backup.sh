@@ -7,7 +7,9 @@
 #   /srv/data/backups/config/immich-db-<date>.sql.gz   (pg_dumpall, Immich's
 #                                                       recommended way)
 #   /srv/data/backups/config/config-<date>.tar.gz      (config/, without
-#                                                       caches and logs)
+#                                                       caches, logs and the
+#                                                       root-only TLS cert,
+#                                                       which Traefik re-issues)
 # Only the newest 7 of each are kept.
 #
 # The apps keep their settings in SQLite files that can't be copied safely
@@ -32,6 +34,8 @@ if ! mountpoint -q /srv/data; then
   exit 1
 fi
 mkdir -p "$DEST"
+# Leftovers of an earlier run that failed halfway.
+rm -f "$DEST"/*.part
 
 # 1. Immich database, dumped while it runs (pg_dumpall is consistent).
 docker exec immich-postgres sh -c 'pg_dumpall --clean --if-exists --username="$POSTGRES_USER"' \
@@ -59,6 +63,7 @@ tar -C "$REPO_ROOT" -czf "$DEST/config-$STAMP.tar.gz.part" \
   --exclude='config/*/logs' --exclude='config/*/*/logs' --exclude='config/jellyfin/log' \
   --exclude='config/*/cache' --exclude='config/*/.cache' \
   --exclude='config/jellyfin/data/transcodes' \
+  --exclude='config/traefik/letsencrypt/acme.json' \
   config
 mv "$DEST/config-$STAMP.tar.gz.part" "$DEST/config-$STAMP.tar.gz"
 
