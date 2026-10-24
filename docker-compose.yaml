@@ -62,6 +62,8 @@ services:
     volumes:
       - ${CONFIG_ROOT}/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Read-only, only so the resources widget can show the data disk's free space.
+      - /srv/data:/mnt/data:ro
     labels:
       - traefik.enable=true
       - traefik.http.routers.homepage.rule=Host(`home.${DOMAIN}`)

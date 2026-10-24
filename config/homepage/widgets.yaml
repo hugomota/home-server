@@ -1,7 +1,15 @@
 - resources:
     cpu: true
     memory: true
-    disk: /
+    disk:
+      - /
+      - /mnt/data
+    cputemp: true
+    tempmin: 30
+    tempmax: 100
+    uptime: true
+    units: metric
+    expanded: true
 - search:
     provider: duckduckgo
     target: _blank
