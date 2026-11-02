@@ -10,6 +10,9 @@
 #                                                       caches, logs and the
 #                                                       root-only TLS cert,
 #                                                       which Traefik re-issues)
+#   /srv/data/backups/config/toolio-<date>.tar.gz      (Toolio's data/: finance
+#                                                       DynamoDB Local file +
+#                                                       local JSON store)
 # Only the newest 7 of each are kept.
 #
 # The apps keep their settings in SQLite files that can't be copied safely
@@ -70,10 +73,28 @@ mv "$DEST/config-$STAMP.tar.gz.part" "$DEST/config-$STAMP.tar.gz"
 restart_apps
 trap - EXIT
 
-# 3. Keep only the newest $KEEP of each kind.
-for kind in immich-db config; do
-  ls -1t "$DEST/$kind"-*.gz | tail -n +$((KEEP + 1)) | xargs -r rm --
+# 3. Toolio data (bank movements!). DynamoDB Local keeps it in one SQLite
+#    file: stop the DB container for the few seconds of the copy.
+TOOLIO_DATA="$REPO_ROOT/../toolio/data"
+if [[ -d "$TOOLIO_DATA" ]]; then
+  toolio_db_running="$(docker inspect -f '{{.State.Running}}' toolio-dynamodb 2>/dev/null || echo false)"
+  if [[ "$toolio_db_running" == "true" ]]; then
+    trap 'docker start toolio-dynamodb > /dev/null' EXIT
+    docker stop toolio-dynamodb > /dev/null
+  fi
+  tar -C "$(dirname "$TOOLIO_DATA")" -czf "$DEST/toolio-$STAMP.tar.gz.part" data
+  mv "$DEST/toolio-$STAMP.tar.gz.part" "$DEST/toolio-$STAMP.tar.gz"
+  if [[ "$toolio_db_running" == "true" ]]; then
+    docker start toolio-dynamodb > /dev/null
+    trap - EXIT
+  fi
+fi
+
+# 4. Keep only the newest $KEEP of each kind.
+for kind in immich-db config toolio; do
+  { ls -1t "$DEST/$kind"-*.gz 2>/dev/null || true; } | tail -n +$((KEEP + 1)) | xargs -r rm --
 done
 
 echo "OK: $(du -h "$DEST/immich-db-$STAMP.sql.gz" | cut -f1) database," \
-  "$(du -h "$DEST/config-$STAMP.tar.gz" | cut -f1) config, in $DEST"
+  "$(du -h "$DEST/config-$STAMP.tar.gz" | cut -f1) config," \
+  "$( [[ -f "$DEST/toolio-$STAMP.tar.gz" ]] && du -h "$DEST/toolio-$STAMP.tar.gz" | cut -f1 || echo 'no') toolio, in $DEST"
