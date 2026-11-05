@@ -218,6 +218,35 @@ at all.
 
 qBittorrent runs without a VPN.
 
+### Lingarr (EN → PT-PT subtitle fallback)
+
+`lingarr` (media profile, `https://lingarr.<domain>`, LAN only, no login)
+translates English subtitles to European Portuguese with DeepL when there is
+no Portuguese subtitle. Settings live in its own SQLite DB (`config/lingarr`):
+
+- Sonarr/Radarr API keys: set once through `POST /api/setting/encrypted`
+  (`radarr_api_key`, `sonarr_api_key`). Don't pass them as env vars: 1.4.1
+  stores those unencrypted and then can't read them (nothing gets listed).
+- DeepL key: pasted in the UI (Settings → Services). Free plan = 500k
+  characters a month (~8–10 films).
+- Output: `<video>.pt-pt.srt` next to the video.
+
+Automation is off on 1.4.1 (it would also translate films that already have
+Bazarr's `.pt.srt`). `lingarr-autoenable.timer` (daily 05:30) runs
+`scripts/lingarr-autoenable.sh`, which waits for a release with
+`first_target_only`, then upgrades the pinned image, sets targets
+`[pt-PT, pt]` + first target only, and turns automation on (04:00, max 5 a
+night, items older than 24 h so Bazarr goes first). It backs up
+`config/lingarr` first and rolls back on failure. When done it writes
+`config/lingarr-autoenable.done` and `server-status` says so. Then remove the
+timer and commit the new image tag:
+
+```bash
+sudo systemctl disable --now lingarr-autoenable.timer
+sudo rm /etc/systemd/system/lingarr-autoenable.{service,timer}
+sudo systemctl daemon-reload
+```
+
 ## Local AI (`ai` profile)
 
 Open WebUI offers two kinds of models, plus SearXNG for web search:

@@ -74,6 +74,10 @@ warnings=()
 failed=$(systemctl --failed --no-legend --plain | awk '{print $1}' | paste -sd' ')
 [[ -n "$failed" ]] && warnings+=("failed services: $failed")
 [[ -f /run/reboot-required ]] && warnings+=("reboot needed (will happen at 04:00 automatically)")
+# Written by scripts/lingarr-autoenable.sh once it has done its job.
+lingarr_done=/home/hmota/projects/home-server/config/lingarr-autoenable.done
+[[ -f "$lingarr_done" ]] && systemctl is-enabled -q lingarr-autoenable.timer 2>/dev/null \
+    && warnings+=("Lingarr auto-translation is ON since $(cat "$lingarr_done"): remove the timer (readme: Lingarr)")
 if (( ${#warnings[@]} )); then
     echo
     echo "${bold}Attention${reset}"

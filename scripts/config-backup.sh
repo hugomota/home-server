@@ -27,7 +27,7 @@ SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DEST=/srv/data/backups/config
 KEEP=7
-APPS=(jellyfin sonarr radarr prowlarr bazarr seerr qbittorrent)
+APPS=(jellyfin sonarr radarr prowlarr bazarr seerr qbittorrent lingarr)
 STAMP="$(date +%Y-%m-%d_%H%M)"
 
 # /srv/data is mounted with nofail: if the HDD is missing, the folder is

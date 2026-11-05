@@ -341,6 +341,41 @@ services:
       - proxy
     restart: unless-stopped
 
+  # Lingarr: translates EN subtitles to PT-PT (DeepL) when no PT subtitle exists.
+  # Same /data paths as Sonarr/Radarr, so no path mapping is needed.
+  lingarr:
+    image: ghcr.io/lingarr-translate/lingarr:1.4.1
+    container_name: lingarr
+    profiles: [media]
+    user: "${PUID:-1000}:${PGID:-1000}"
+    environment:
+      TZ: ${TZ:-Europe/Lisbon}
+      ASPNETCORE_URLS: http://+:9876
+      DB_CONNECTION: sqlite
+      MAX_CONCURRENT_JOBS: 1
+      AUTH_ENABLED: "false"          # LAN-only via Traefik, like Sonarr/Radarr
+      TELEMETRY_ENABLED: "false"
+      SONARR_URL: http://sonarr:8989
+      RADARR_URL: http://radarr:7878
+      # API keys: NOT here. 1.4.1 stores env keys unencrypted but reads them
+      # encrypted (sync fails). Set once via POST /api/setting/encrypted.
+    volumes:
+      - ${CONFIG_ROOT}/lingarr:/app/config
+      - ${MEDIA_ROOT}:/data
+    mem_limit: 512m
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lingarr.rule=Host(`lingarr.${DOMAIN}`)
+      - traefik.http.routers.lingarr.entrypoints=websecure
+      - traefik.http.routers.lingarr.tls=true
+      - traefik.http.routers.lingarr.tls.certresolver=le
+      - traefik.http.routers.lingarr.tls.domains[0].main=*.${DOMAIN}
+      - traefik.http.routers.lingarr.middlewares=lan-only@docker
+      - traefik.http.services.lingarr.loadbalancer.server.port=9876
+    networks:
+      - proxy
+    restart: unless-stopped
+
   immich-server:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     container_name: immich-server

@@ -1,0 +1,11 @@
+[Unit]
+Description=Upgrade Lingarr and turn on automatic EN->PT-PT subtitles once "first target only" is released (see scripts/lingarr-autoenable.sh)
+Requires=docker.service
+After=docker.service srv-data.mount
+# Job done once this file exists: the timer keeps firing but the service is skipped.
+ConditionPathExists=!/home/hmota/projects/home-server/config/lingarr-autoenable.done
+
+[Service]
+Type=oneshot
+User=hmota
+ExecStart=/home/hmota/projects/home-server/scripts/lingarr-autoenable.sh
