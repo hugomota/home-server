@@ -1,0 +1,8 @@
+[Unit]
+Description=Rename Lingarr's .pt-pt.srt subtitles to .pt.srt so Jellyfin sees them as Portuguese (see scripts/subtitles-rename-ptpt.sh)
+After=srv-data.mount
+
+[Service]
+Type=oneshot
+User=hmota
+ExecStart=/home/hmota/projects/home-server/scripts/subtitles-rename-ptpt.sh

@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily rename of new Lingarr .pt-pt.srt subtitles (06:00, after Lingarr's 04:00 run; night window)
+
+[Timer]
+OnCalendar=*-*-* 06:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
